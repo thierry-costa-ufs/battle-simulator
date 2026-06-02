@@ -6,6 +6,7 @@ module com.game.battlesimulator {
     requires org.kordamp.ikonli.javafx;
 
     opens com.game.battlesimulator to javafx.fxml;
+    opens com.game.battlesimulator.controller to javafx.fxml;
 
     exports com.game.battlesimulator;
 }
