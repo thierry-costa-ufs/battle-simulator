@@ -1,0 +1,142 @@
+/* ==========================================================================
+   Configurações Globais e Tipografia Base
+   ========================================================================== */
+.battle-container {
+    -fx-background-color: #F0F0F0;
+    -fx-padding: 15px;
+    -fx-min-width: 800px;
+    -fx-min-height: 600px;
+}
+
+.label {
+    -fx-font-family: "Courier New", "monospace";
+    -fx-font-weight: 800;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1A1A1A;
+}
+
+.hp-text {
+    -fx-font-family: "Courier New", "monospace";
+    -fx-font-size: 11px;
+    -fx-text-fill: #555555;
+}
+
+/* ==========================================================================
+   Sistema de Turnos
+   ========================================================================== */
+.turn-order-container {
+    -fx-background-color: #fff;
+    -fx-padding: 0px 20px;
+    -fx-min-height: 50px;
+    -fx-max-height: 50px;
+    -fx-alignment: center;
+    -fx-spacing: 15px;
+    -fx-border-color: #1A1A1A;
+    -fx-border-width: 2px;
+}
+
+.turn-title-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #1A1A1A;
+    -fx-font-weight: 900;
+    -fx-letter-spacing: 1px;
+}
+
+.carousel-item {
+    -fx-min-width: 80px;
+    -fx-max-width: 80px;
+    -fx-font-size: 11px;
+    -fx-font-weight: 900;
+    -fx-padding: 4px 8px;
+    -fx-alignment: center;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-color: #1A1A1A;
+    -fx-border-width: 2px;
+}
+
+.carousel-item-active {
+    -fx-background-color: #fff;
+    -fx-text-fill: #1A1A1A;
+}
+
+.carousel-item-queue {
+    -fx-background-color: #F0F0F0;
+    -fx-text-fill: #1A1A1A;
+}
+
+/* ==========================================================================
+   Barras de Progresso
+   ========================================================================== */
+.progress-bar {
+    -fx-pref-width: 100px;
+    -fx-pref-height: 10px;
+}
+
+.progress-bar .track {
+    -fx-background-color: #fff;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-color: #1A1A1A;
+    -fx-border-width: 1px;
+}
+
+.progress-bar .bar {
+    -fx-background-color: #EF4444;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+}
+
+/* ==========================================================================
+   Sprites
+   ========================================================================== */
+.enemy-sprite, .player-sprite {
+    -fx-min-width: 64px;
+    -fx-min-height: 64px;
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+.enemy-sprite {
+    -fx-background-image: url('../images/enemy.png');
+}
+
+.player-sprite {
+    -fx-background-image: url('../images/hero.png');
+}
+
+/* ==========================================================================
+   Controles e Log de Batalha
+   ========================================================================== */
+.list-view {
+    -fx-background-color: #fff;
+    -fx-border-color: #1A1A1A;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1A1A1A;
+    -fx-font-family: "Courier New", "monospace";
+    -fx-padding: 4px;
+}
+
+.button {
+    -fx-background-color: #1A1A1A;
+    -fx-text-fill: #fff;
+    -fx-font-family: "Courier New", "monospace";
+    -fx-font-weight: 800;
+    -fx-padding: 60px 80px;
+    -fx-border-color: #1A1A1A;
+    -fx-border-width: 2px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.target-button {
+    -fx padding: 15px 25px;
+}

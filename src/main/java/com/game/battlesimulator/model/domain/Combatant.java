@@ -5,12 +5,14 @@ public abstract class Combatant {
     protected int currentHealth;
     protected int maxHealth;
     protected int attackDamage;
+    private boolean isPlayer;
 
-    public Combatant(String n) {
-        name = n;
-        currentHealth = 5;
-        maxHealth = 5;
-        attackDamage = 1;
+    public Combatant(String name, int maxHealth, int attackDamage, boolean isPlayer) {
+        this.name = name;
+        this.maxHealth = maxHealth;
+        currentHealth = maxHealth;
+        this.attackDamage = attackDamage;
+        this.isPlayer = isPlayer;
     }
 
     // METHODS
@@ -18,41 +20,18 @@ public abstract class Combatant {
         return (currentHealth > 0);
     }
 
-    public void takeDamage(){
-        currentHealth--;
+    public void takeDamage(int damage){
+        this.currentHealth = Math.max(0, this.currentHealth - damage);
     }
 
     // GETTERS
-    public String getName() {
-        return name;
-    }
-
-    public int getCurrentHealth() {
-        return currentHealth;
-    }
-
-    public int getMaxHealth() {
-        return maxHealth;
-    }
-
-    public int getAttackDamage() {
-        return attackDamage;
-    }
-
+    public String getName() {return name;}
+    public int getCurrentHealth() {return currentHealth;}
+    public int getMaxHealth() {return maxHealth;}
+    public int getAttackDamage() {return attackDamage;}
     // SETTERS
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCurrentHealth(int currentHealth) {
-        this.currentHealth = currentHealth;
-    }
-
-    public void setMaxHealth(int maxHealth) {
-        this.maxHealth = maxHealth;
-    }
-
-    public void setAttackDamage(int attackDamage) {
-        this.attackDamage = attackDamage;
-    }
+    public void setName(String name) {this.name = name;}
+    public void setCurrentHealth(int currentHealth) {this.currentHealth = currentHealth;}
+    public void setMaxHealth(int maxHealth) {this.maxHealth = maxHealth;}
+    public void setAttackDamage(int attackDamage) {this.attackDamage = attackDamage;}
 }
