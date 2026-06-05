@@ -4,19 +4,20 @@ import com.game.battlesimulator.model.domain.Player;
 
 public class PlayerFactory {
 
-    private int baseHealth = 100;
-    private int healthGrowth = 10;
+    private int baseHealth = 50;
+    private int healthGrowth = 40;
     private int baseAttack = 10;
-    private int attackGrowth = 1;
-
+    private int attackGrowth = 5;
+    
     public PlayerFactory(){
     }
 
     public Player[] generatePlayer(int currentRound){
         int playersQuantity = 1;
 
-        int currentMaxHealth = baseHealth + (currentRound * healthGrowth);
-        int currentAttackDamage = baseAttack + (currentRound * attackGrowth);
+        int multiplier = currentRound-1;
+        int currentMaxHealth = baseHealth + (multiplier * healthGrowth);
+        int currentAttackDamage = baseAttack + (multiplier * attackGrowth);
 
         Player[] players = new Player[playersQuantity];
         for(int i = 0; i < playersQuantity; i++){
