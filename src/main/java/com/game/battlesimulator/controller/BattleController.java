@@ -4,9 +4,7 @@ import com.game.battlesimulator.datastructure.CircularQueue;
 import com.game.battlesimulator.model.domain.Combatant;
 import com.game.battlesimulator.model.domain.Enemy;
 import com.game.battlesimulator.model.domain.Player;
-import com.game.battlesimulator.model.factory.BattleMenuFactory;
-import com.game.battlesimulator.model.factory.CombatantStatusFactory;
-import com.game.battlesimulator.model.factory.TurnOrderFactory;
+import com.game.battlesimulator.model.factory.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -24,11 +22,12 @@ public class BattleController {
     // ENEMY
     @FXML private VBox enemyStatusContainer;
     @FXML private VBox enemySpritesContainer;
+    private final EnemyFactory enemyFactory = new EnemyFactory();
 
     // PLAYER
     @FXML private VBox playerStatusContainer;
     @FXML private VBox playerSpriteContainer;
-    private Combatant hero;
+    private final PlayerFactory playerFactory = new PlayerFactory();
 
     // CONTROLS & LOG
     @FXML private ListView<String> battleLogView;
@@ -36,29 +35,21 @@ public class BattleController {
     @FXML private HBox turnOrderContainer;
     @FXML private VBox controlsContainer;
 
+    private int currentRound = 1;
     private CircularQueue turnQueue;
     private List<Combatant> enemiesList;
+    private List<Combatant> playersList;
 
     @FXML
     public void initialize() {
         turnQueue = new CircularQueue();
         enemiesList = new ArrayList<>();
-        Random random = new Random();
+        playersList = new ArrayList<>();
 
-        hero = new Player("Herói", 20,2);
-        turnQueue.enqueue(hero);
+        int playersQuantity = loadPlayersIntoBattle();
+        int enemiesQuantity = loadHordeIntoBattle();
 
-        int goblinQuantity = random.nextInt(4) + 2;
-        char sufixo = 'A';
-
-        for (int i=0; i< goblinQuantity; i++) {
-            Combatant goblin = new Enemy("Goblin " + sufixo, 10, 1) ;
-            turnQueue.enqueue(goblin);
-            enemiesList.add(goblin);
-            sufixo++;
-        }
-
-        battleLogView.getItems().add("Cuidado! Uma horda com " + goblinQuantity + " goblins emboscou você!");
+        battleLogView.getItems().add("Cuidado! Uma horda com " + enemiesQuantity + " goblins emboscou você!");
         battleLogView.getItems().add("O que o herói vai fazer?");
 
         updatePlayerLifeBar();
@@ -66,18 +57,61 @@ public class BattleController {
         updateTurnOrder(turnQueue);
     }
 
+    private void startNextRound(){
+        enemiesList.clear();
+        currentRound++;
+        turnQueue.clear();
+
+        playersLevelUp();
+        loadHordeIntoBattle();
+
+        updateTurnOrder(turnQueue);
+    }
+
+    private int loadHordeIntoBattle(){
+        Enemy[] horde = enemyFactory.generateHorde(currentRound);
+        int enemiesQuantity = horde.length;
+
+        for (int i=0; i< enemiesQuantity; i++) {
+            turnQueue.enqueue(horde[i]);
+            enemiesList.add(horde[i]);
+        }
+        return enemiesQuantity;
+    }
+
+    private int loadPlayersIntoBattle(){
+        Player[] players = playerFactory.generatePlayer(currentRound);
+        int  playersQuantity = players.length;
+
+        for(int i = 0; i < playersQuantity; i++){
+            turnQueue.enqueue(players[i]);
+            playersList.add(players[i]);
+        }
+        return playersQuantity;
+    }
+
+    private void playersLevelUp(){
+        for(int i = 0; i < playersList.size(); i++){
+            Player currentHero = (Player) playersList.get(i);
+            currentHero.levelUp();
+            turnQueue.enqueue(playersList.get(i));
+        }
+    }
+
     private void updateEnemyLifeBars() {
         enemyStatusContainer.getChildren().clear();
-        for (Combatant goblin : enemiesList) {
-            VBox goblinBox = CombatantStatusFactory.createStatusNode(goblin, Pos.TOP_LEFT, false);
-            enemyStatusContainer.getChildren().add(goblinBox);
+        for (Combatant enemy : enemiesList) {
+            VBox enemyBox = CombatantStatusFactory.createStatusNode(enemy, Pos.TOP_LEFT, false);
+            enemyStatusContainer.getChildren().add(enemyBox);
         }
     }
 
     private void updatePlayerLifeBar() {
         playerStatusContainer.getChildren().clear();
-        VBox playerBox = CombatantStatusFactory.createStatusNode(hero, Pos.BOTTOM_RIGHT, true);
-        playerStatusContainer.getChildren().add(playerBox);
+        for(Combatant player : playersList){
+            VBox playerBox = CombatantStatusFactory.createStatusNode(player, Pos.BOTTOM_RIGHT, true);
+            playerStatusContainer.getChildren().add(playerBox);
+        }
     }
 
     @FXML
@@ -99,7 +133,8 @@ public class BattleController {
     }
 
     private void executePlayerAttack(Combatant target) {
-        battleLogView.getItems().add(hero.getName() + " atacou " + target.getName() + "!");
+        Combatant currentAttacker = turnQueue.getCombatantOnIndex(0);
+        battleLogView.getItems().add(currentAttacker.getName() + " atacou " + target.getName() + "!");
         turnQueue.rotateTurn();
         updateTurnOrder(turnQueue);
         resetControls();

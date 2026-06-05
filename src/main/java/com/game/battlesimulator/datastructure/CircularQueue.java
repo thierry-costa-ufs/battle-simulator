@@ -88,4 +88,11 @@ public class CircularQueue {
 
         return atual.getInfo();
     }
+
+    public void clear(){
+        fim.setProximo(cabeca);
+        cabeca.setProximo(cabeca);
+        size = 0;
+    }
+
 }
