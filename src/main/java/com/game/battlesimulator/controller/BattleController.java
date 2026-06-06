@@ -4,6 +4,7 @@ import com.game.battlesimulator.datastructure.CircularQueue;
 import com.game.battlesimulator.model.domain.Combatant;
 import com.game.battlesimulator.model.domain.Enemy;
 import com.game.battlesimulator.model.domain.Player;
+import com.game.battlesimulator.model.engine.BattleEngine;
 import com.game.battlesimulator.model.factory.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,38 +17,38 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class BattleController {
-    // ENEMY
+
+    //BATTLE ENGINE
+    private final BattleEngine battleEngine = new BattleEngine();
+
+    //ENEMY
     @FXML private VBox enemyStatusContainer;
     @FXML private VBox enemySpritesContainer;
-    private final EnemyFactory enemyFactory = new EnemyFactory();
+    List<Combatant> enemiesList = battleEngine.getEnemiesList();
 
-    // PLAYER
+    //PLAYER
     @FXML private VBox playerStatusContainer;
     @FXML private VBox playerSpriteContainer;
-    private final PlayerFactory playerFactory = new PlayerFactory();
+    List<Combatant> playersList = battleEngine.getPlayersList();
 
-    // CONTROLS & LOG
+    //QUEUE
+    CircularQueue turnQueue = battleEngine.getTurnQueue();
+
+    //CONTROLS & LOG
     @FXML private ListView<String> battleLogView;
     @FXML private Button attackButton;
     @FXML private HBox turnOrderContainer;
     @FXML private VBox controlsContainer;
 
-    private int currentRound = 1;
-    private CircularQueue turnQueue;
-    private List<Combatant> enemiesList;
-    private List<Combatant> playersList;
-
     @FXML
     public void initialize() {
-        turnQueue = new CircularQueue();
-        enemiesList = new ArrayList<>();
-        playersList = new ArrayList<>();
 
-        int playersQuantity = loadPlayersIntoBattle();
-        int enemiesQuantity = loadHordeIntoBattle();
+        battleEngine.startBattle();
+
+        int enemiesQuantity = enemiesList.size();
+        int playersQuantity = playersList.size();
 
         battleLogView.getItems().add("Cuidado! Uma horda com " + enemiesQuantity + " goblins emboscou você!");
         battleLogView.getItems().add("O que o herói vai fazer?");
@@ -58,44 +59,11 @@ public class BattleController {
     }
 
     private void startNextRound(){
-        enemiesList.clear();
-        currentRound++;
-        turnQueue.clear();
+        battleEngine.prepareNextRound();
 
-        playersLevelUp();
-        loadHordeIntoBattle();
-
+        updatePlayerLifeBar();
+        updateEnemyLifeBars();
         updateTurnOrder(turnQueue);
-    }
-
-    private int loadHordeIntoBattle(){
-        Enemy[] horde = enemyFactory.generateHorde(currentRound);
-        int enemiesQuantity = horde.length;
-
-        for (int i=0; i< enemiesQuantity; i++) {
-            turnQueue.enqueue(horde[i]);
-            enemiesList.add(horde[i]);
-        }
-        return enemiesQuantity;
-    }
-
-    private int loadPlayersIntoBattle(){
-        Player[] players = playerFactory.generatePlayer(currentRound);
-        int  playersQuantity = players.length;
-
-        for(int i = 0; i < playersQuantity; i++){
-            turnQueue.enqueue(players[i]);
-            playersList.add(players[i]);
-        }
-        return playersQuantity;
-    }
-
-    private void playersLevelUp(){
-        for(int i = 0; i < playersList.size(); i++){
-            Player currentHero = (Player) playersList.get(i);
-            currentHero.levelUp();
-            turnQueue.enqueue(playersList.get(i));
-        }
     }
 
     private void updateEnemyLifeBars() {
@@ -122,7 +90,7 @@ public class BattleController {
             showTargetSelectionGrid();
         }
         else {
-            battleLogView.getItems().add(currentAttacker.getName() + " está pensando...");
+            executeEnemyAttack();
         }
     }
 
@@ -132,10 +100,26 @@ public class BattleController {
         controlsContainer.getChildren().add(targetGrid);
     }
 
-    private void executePlayerAttack(Combatant target) {
+    private void executeEnemyAttack(){
         Combatant currentAttacker = turnQueue.getCombatantOnIndex(0);
+
+        Combatant target = battleEngine.executeEnemyTurn();
+        battleLogView.getItems().add(currentAttacker.getName() + " atacou " + target.getName());
+        updateEnemyLifeBars();
+        updatePlayerLifeBar();
+        updateTurnOrder(turnQueue);
+        resetControls();
+        battleLogView.scrollTo(battleLogView.getItems().size() - 1);
+    }
+
+    private void executePlayerAttack(Combatant target) {
+        Combatant currentAttacker = battleEngine.getCurrentAttacker();
+
+        battleEngine.executeAttack(target);
         battleLogView.getItems().add(currentAttacker.getName() + " atacou " + target.getName() + "!");
-        turnQueue.rotateTurn();
+
+        updateEnemyLifeBars();
+        updatePlayerLifeBar();
         updateTurnOrder(turnQueue);
         resetControls();
         battleLogView.scrollTo(battleLogView.getItems().size() - 1);

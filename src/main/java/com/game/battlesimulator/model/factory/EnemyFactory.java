@@ -2,6 +2,8 @@ package com.game.battlesimulator.model.factory;
 
 import com.game.battlesimulator.model.domain.Enemy;
 
+import java.util.Random;
+
 public class EnemyFactory {
 
     private int minEnemys = 2;
