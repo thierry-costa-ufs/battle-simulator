@@ -1,11 +1,8 @@
 package com.game.battlesimulator.controller;
 
-import com.game.battlesimulator.datastructure.CircularQueue;
-import com.game.battlesimulator.model.domain.Combatant;
-import com.game.battlesimulator.model.domain.Enemy;
-import com.game.battlesimulator.model.domain.Player;
 import com.game.battlesimulator.model.engine.BattleEngine;
 import com.game.battlesimulator.model.factory.*;
+import com.game.battlesimulator.model.payload.CombatantRecord;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -15,7 +12,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BattleController {
@@ -26,15 +22,10 @@ public class BattleController {
     //ENEMY
     @FXML private VBox enemyStatusContainer;
     @FXML private VBox enemySpritesContainer;
-    List<Combatant> enemiesList = battleEngine.getEnemiesList();
 
     //PLAYER
     @FXML private VBox playerStatusContainer;
     @FXML private VBox playerSpriteContainer;
-    List<Combatant> playersList = battleEngine.getPlayersList();
-
-    //QUEUE
-    CircularQueue turnQueue = battleEngine.getTurnQueue();
 
     //CONTROLS & LOG
     @FXML private ListView<String> battleLogView;
@@ -47,28 +38,30 @@ public class BattleController {
 
         battleEngine.startBattle();
 
-        int enemiesQuantity = enemiesList.size();
-        int playersQuantity = playersList.size();
+        int enemiesQuantity = battleEngine.getEnemiesQuantity();
 
         battleLogView.getItems().add("Cuidado! Uma horda com " + enemiesQuantity + " goblins emboscou você!");
         battleLogView.getItems().add("O que o herói vai fazer?");
 
-        updatePlayerLifeBar();
-        updateEnemyLifeBars();
-        updateTurnOrder(turnQueue);
+        updateAllUI();
     }
 
     private void startNextRound(){
         battleEngine.prepareNextRound();
+        updateAllUI();
+    }
 
+    private void updateAllUI() {
         updatePlayerLifeBar();
         updateEnemyLifeBars();
-        updateTurnOrder(turnQueue);
+        updateTurnOrder();
+        updateEnemySprites();
     }
 
     private void updateEnemyLifeBars() {
         enemyStatusContainer.getChildren().clear();
-        for (Combatant enemy : enemiesList) {
+        List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
+        for (CombatantRecord enemy : enemies) {
             VBox enemyBox = CombatantStatusFactory.createStatusNode(enemy, Pos.TOP_LEFT, false);
             enemyStatusContainer.getChildren().add(enemyBox);
         }
@@ -76,7 +69,8 @@ public class BattleController {
 
     private void updatePlayerLifeBar() {
         playerStatusContainer.getChildren().clear();
-        for(Combatant player : playersList){
+        List<CombatantRecord> players = battleEngine.getPlayersRecords();
+        for(CombatantRecord player : players){
             VBox playerBox = CombatantStatusFactory.createStatusNode(player, Pos.BOTTOM_RIGHT, true);
             playerStatusContainer.getChildren().add(playerBox);
         }
@@ -84,44 +78,52 @@ public class BattleController {
 
     @FXML
     private void handleButtonClick(ActionEvent event) {
-        Combatant currentAttacker = turnQueue.getCombatantOnIndex(0);
+        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
 
-        if (currentAttacker instanceof Player) {
+        if (currentAttacker.isPlayer()) {
             showTargetSelectionGrid();
-        }
-        else {
+        } else {
             executeEnemyAttack();
         }
     }
 
     private void showTargetSelectionGrid() {
         controlsContainer.getChildren().clear();
-        GridPane targetGrid = BattleMenuFactory.createTargetGrid(enemiesList, this::executePlayerAttack);
+        List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
+        GridPane targetGrid = BattleMenuFactory.createTargetGrid(enemies, this::executePlayerAttack);
         controlsContainer.getChildren().add(targetGrid);
     }
 
-    private void executeEnemyAttack(){
-        Combatant currentAttacker = turnQueue.getCombatantOnIndex(0);
+    private void executePlayerAttack(CombatantRecord target) {
+        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
 
-        Combatant target = battleEngine.executeEnemyTurn();
-        battleLogView.getItems().add(currentAttacker.getName() + " atacou " + target.getName());
-        updateEnemyLifeBars();
-        updatePlayerLifeBar();
-        updateTurnOrder(turnQueue);
-        resetControls();
+        CombatantRecord updatedTarget = battleEngine.executeAttack(target.id());
+        battleLogView.getItems().add(currentAttacker.name() + " atacou " + updatedTarget.name() + "!");
+
+        if (battleEngine.getEnemiesQuantity() == 0) {
+            battleLogView.getItems().add("A horda foi derrotada! Avançando de round...");
+            startNextRound();
+        } else {
+            updateAllUI();
+            resetControls();
+        }
         battleLogView.scrollTo(battleLogView.getItems().size() - 1);
     }
 
-    private void executePlayerAttack(Combatant target) {
-        Combatant currentAttacker = battleEngine.getCurrentAttacker();
+    private void executeEnemyAttack(){
+        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
 
-        battleEngine.executeAttack(target);
-        battleLogView.getItems().add(currentAttacker.getName() + " atacou " + target.getName() + "!");
+        CombatantRecord target = battleEngine.executeEnemyTurn();
+        battleLogView.getItems().add(currentAttacker.name() + " atacou " + target.name());
 
-        updateEnemyLifeBars();
-        updatePlayerLifeBar();
-        updateTurnOrder(turnQueue);
-        resetControls();
+        if (battleEngine.getPlayersQuantity() == 0) {
+            battleLogView.getItems().add("O herói foi derrotado. Fim de jogo.");
+            controlsContainer.getChildren().clear(); // Remove os controles
+            updateAllUI();
+        } else {
+            updateAllUI();
+            resetControls();
+        }
         battleLogView.scrollTo(battleLogView.getItems().size() - 1);
     }
 
@@ -130,9 +132,24 @@ public class BattleController {
         controlsContainer.getChildren().add(attackButton);
     }
 
-    public void updateTurnOrder(CircularQueue combatantQueue) {
+    public void updateTurnOrder() {
         turnOrderContainer.getChildren().clear();
-        List<Label> carouselLabels = TurnOrderFactory.createCarouselNodes(combatantQueue);
+        List<CombatantRecord> turnOrder = battleEngine.getTurnOrderRecords();
+        List<Label> carouselLabels = TurnOrderFactory.createCarouselNodes(turnOrder);
         turnOrderContainer.getChildren().addAll(carouselLabels);
+    }
+
+    private void updateEnemySprites() {
+        enemySpritesContainer.getChildren().clear();
+
+        List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
+
+        for (CombatantRecord enemy : enemies) {
+            if (!enemy.isDead()) {
+                javafx.scene.layout.Region sprite = new javafx.scene.layout.Region();
+                sprite.getStyleClass().add("enemy-sprite");
+                enemySpritesContainer.getChildren().add(sprite);
+            }
+        }
     }
 }

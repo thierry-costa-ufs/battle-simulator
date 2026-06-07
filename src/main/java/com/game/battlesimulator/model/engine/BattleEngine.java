@@ -6,33 +6,37 @@ import com.game.battlesimulator.model.domain.Enemy;
 import com.game.battlesimulator.model.domain.Player;
 import com.game.battlesimulator.model.factory.EnemyFactory;
 import com.game.battlesimulator.model.factory.PlayerFactory;
-
+import com.game.battlesimulator.model.payload.CombatantRecord;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class BattleEngine {
 
     private int currentRound = 1;
     private final Random random = new Random();
-    //QUEUE
+
+    // QUEUE
     private CircularQueue turnQueue;
-    //ENEMIES
+
+    // ENEMIES
     private final EnemyFactory enemyFactory = new EnemyFactory();
     private List<Combatant> enemiesList;
-    //PLAYERS
+
+    // PLAYERS
     private final PlayerFactory playerFactory = new PlayerFactory();
     private List<Combatant> playersList;
 
-    //CONSTRUTORES
+    // CONSTRUTORES
     public BattleEngine(){
         this.turnQueue = new CircularQueue();
         this.enemiesList = new ArrayList<>();
         this.playersList = new ArrayList<>();
     }
 
-    //MÉTODOS
+    // MÉTODOS DE CONTROLE DA BATALHA
     public void startBattle(){
         turnQueue.clear();
         enemiesList.clear();
@@ -44,7 +48,7 @@ public class BattleEngine {
 
     private int loadPlayersIntoBattle(){
         Player[] players = playerFactory.generatePlayer(currentRound);
-        int  playersQuantity = players.length;
+        int playersQuantity = players.length;
 
         for(int i = 0; i < playersQuantity; i++){
             turnQueue.enqueue(players[i]);
@@ -61,32 +65,44 @@ public class BattleEngine {
             turnQueue.enqueue(horde[i]);
             enemiesList.add(horde[i]);
         }
-
         return enemiesQuantity;
     }
 
-    public void executeAttack(Combatant target){
-        Combatant attacker = getCurrentAttacker();
+    // MÉTODOS DE AÇÃO (REFATORADOS PARA USAR IDENTIFICADORES E RETORNAR RECORDS)
+    public CombatantRecord executeAttack(String targetId){
+        Combatant attacker = turnQueue.getCombatantOnIndex(0);
+        Combatant target = findCombatantById(targetId);
 
         if(attacker == null || target == null){
             throw new IllegalArgumentException("Atacante ou alvo inválido!!");
         }
 
         int currentHealth = target.getCurrentHealth();
-        int damage = attacker.getAttackDamage() ;
-        int newHealth = currentHealth - damage;
+        int damage = attacker.getAttackDamage();
+        int newHealth = Math.max(0, currentHealth - damage);
 
         target.setCurrentHealth(newHealth);
 
-        turnQueue.rotateTurn();
+        if (!target.isAlive()) {
+            turnQueue.remove(target);
+            enemiesList.remove(target);
+            playersList.remove(target);
+        }
+
+        if (getEnemiesQuantity() > 0 && getPlayersQuantity() > 0) {
+            if (turnQueue.getCombatantOnIndex(0) == attacker) {
+                turnQueue.rotateTurn();
+            }
+        }
+
+        return toRecord(target);
     }
 
-    public Combatant executeEnemyTurn(){
+    public CombatantRecord executeEnemyTurn(){
         int randomIndex = random.nextInt(playersList.size());
         Combatant target = playersList.get(randomIndex);
 
-        executeAttack(target);
-        return target;
+        return executeAttack(target.getName());
     }
 
     private void playersLevelUp(){
@@ -105,33 +121,68 @@ public class BattleEngine {
         turnQueue.clear();
         enemiesList.clear();
 
-       passRound();
+        passRound();
 
         playersLevelUp();
         loadHordeIntoBattle();
     }
 
-    //GETTERS
-    public Combatant getCurrentAttacker(){
-        return turnQueue.getCombatantOnIndex(0);
+    // UTILS E BUSCAS INTERNAS
+    private Combatant findCombatantById(String id) {
+        for (Combatant c : playersList) {
+            if (c.getName().equals(id)) return c;
+        }
+        for (Combatant c : enemiesList) {
+            if (c.getName().equals(id)) return c;
+        }
+        return null;
     }
-    public List<Combatant> getEnemiesList() {
-        return enemiesList;
+
+    private CombatantRecord toRecord(Combatant c) {
+        if (c == null) return null;
+        return new CombatantRecord(
+                c.getName(),
+                c.getName(),
+                c.getCurrentHealth(),
+                c.getMaxHealth(),
+                c instanceof Player
+        );
     }
-    public List<Combatant> getPlayersList() {
-        return playersList;
+
+    // GETTERS
+    public CombatantRecord getCurrentAttackerRecord(){
+        return toRecord(turnQueue.getCombatantOnIndex(0));
     }
-    public CircularQueue getTurnQueue() {
-        return turnQueue;
+
+    public List<CombatantRecord> getEnemiesRecords() {
+        return enemiesList.stream().map(this::toRecord).collect(Collectors.toList());
     }
+
+    public List<CombatantRecord> getPlayersRecords() {
+        return playersList.stream().map(this::toRecord).collect(Collectors.toList());
+    }
+
+    public List<CombatantRecord> getTurnOrderRecords() {
+        List<CombatantRecord> order = new ArrayList<>();
+        int totalCombatants = getPlayersQuantity() + getEnemiesQuantity();
+        for (int i = 0; i < totalCombatants; i++) {
+            Combatant c = turnQueue.getCombatantOnIndex(i);
+            if (c != null) {
+                order.add(toRecord(c));
+            }
+        }
+        return order;
+    }
+
     public int getEnemiesQuantity(){
         return enemiesList.size();
     }
+
     public int getPlayersQuantity(){
         return playersList.size();
     }
+
     public int getCurrentRound(){
         return currentRound;
     }
-
 }

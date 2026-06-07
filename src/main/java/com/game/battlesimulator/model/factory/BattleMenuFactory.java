@@ -1,6 +1,6 @@
 package com.game.battlesimulator.model.factory;
 
-import com.game.battlesimulator.model.domain.Combatant;
+import com.game.battlesimulator.model.payload.CombatantRecord;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class BattleMenuFactory {
-    public static GridPane createTargetGrid(List<Combatant> enemies, Consumer<Combatant> onTargetSelected) {
+    public static GridPane createTargetGrid(List<CombatantRecord> enemies, Consumer<CombatantRecord> onTargetSelected) {
         GridPane targetGrid = new GridPane();
         targetGrid.setHgap(10);
         targetGrid.setVgap(10);
@@ -19,9 +19,9 @@ public class BattleMenuFactory {
         int row=0;
         int col=0;
 
-        for (Combatant enemy : enemies) {
-            if (enemy.isAlive()) {
-                Button btnTarget = new Button(enemy.getName());
+        for (CombatantRecord enemy : enemies) {
+            if (!enemy.isDead()) {
+                Button btnTarget = new Button(enemy.name());
                 btnTarget.setOnAction(e -> onTargetSelected.accept(enemy));
 
                 targetGrid.add(btnTarget, col, row);

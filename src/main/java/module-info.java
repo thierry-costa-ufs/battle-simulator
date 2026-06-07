@@ -3,7 +3,6 @@ module com.game.battlesimulator {
     requires javafx.fxml;
     requires org.controlsfx.controls;
     requires org.kordamp.ikonli.javafx;
-    requires com.game.battlesimulator;
 
     exports com.game.battlesimulator.view;
 

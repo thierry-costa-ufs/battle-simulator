@@ -71,6 +71,36 @@ public class CircularQueue {
         return info;
     }
 
+    public boolean remove(Combatant info) {
+        if (isEmpty()) return false;
+
+        Node anterior = cabeca;
+        Node atual = cabeca.getProximo();
+
+        for (int i = 0; i < size; i++) {
+            if (atual.getInfo().equals(info)) {
+                anterior.setProximo(atual.getProximo());
+
+                if (atual == fim) {
+                    fim = (anterior == cabeca) ? cabeca : anterior;
+                }
+
+                size--;
+
+                if (size == 0) {
+                    cabeca.setProximo(cabeca);
+                    fim = cabeca;
+                } else {
+                    fim.setProximo(cabeca.getProximo());
+                }
+                return true;
+            }
+            anterior = atual;
+            atual = atual.getProximo();
+        }
+        return false;
+    }
+
     public void rotateTurn() {
         if (size > 1) {
             Combatant currentAttacker = dequeue();
