@@ -1,4 +1,37 @@
 package com.game.battlesimulator.model.domain;
 
-public class Combatant {
+public abstract class Combatant {
+    protected String name;
+    protected int currentHealth;
+    protected int maxHealth;
+    protected int attackDamage;
+    private boolean isPlayer;
+
+    public Combatant(String name, int maxHealth, int attackDamage, boolean isPlayer) {
+        this.name = name;
+        this.maxHealth = maxHealth;
+        currentHealth = maxHealth;
+        this.attackDamage = attackDamage;
+        this.isPlayer = isPlayer;
+    }
+
+    // METHODS
+    public boolean isAlive() {
+        return (currentHealth > 0);
+    }
+
+    public void takeDamage(int damage){
+        this.currentHealth = Math.max(0, this.currentHealth - damage);
+    }
+
+    // GETTERS
+    public String getName() {return name;}
+    public int getCurrentHealth() {return currentHealth;}
+    public int getMaxHealth() {return maxHealth;}
+    public int getAttackDamage() {return attackDamage;}
+    // SETTERS
+    public void setName(String name) {this.name = name;}
+    public void setCurrentHealth(int currentHealth) {this.currentHealth = currentHealth;}
+    public void setMaxHealth(int maxHealth) {this.maxHealth = maxHealth;}
+    public void setAttackDamage(int attackDamage) {this.attackDamage = attackDamage;}
 }
