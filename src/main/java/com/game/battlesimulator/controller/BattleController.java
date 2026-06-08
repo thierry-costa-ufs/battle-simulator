@@ -2,6 +2,7 @@ package com.game.battlesimulator.controller;
 
 import com.game.battlesimulator.model.engine.BattleEngine;
 import com.game.battlesimulator.model.factory.*;
+import com.game.battlesimulator.model.payload.BattleStatusRecord;
 import com.game.battlesimulator.model.payload.CombatantRecord;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -95,15 +96,26 @@ public class BattleController {
     }
 
     private void executePlayerAttack(CombatantRecord target) {
-        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
+        BattleStatusRecord status = battleEngine.executeAttack(target.id());
+        String killedName = null;
 
-        CombatantRecord updatedTarget = battleEngine.executeAttack(target.id());
-        battleLogView.getItems().add(currentAttacker.name() + " atacou " + updatedTarget.name() + "!");
+        battleLogView.getItems().add(status.actionLog());
 
-        if (battleEngine.getEnemiesQuantity() == 0) {
-            battleLogView.getItems().add("A horda foi derrotada! Avançando de round...");
-            startNextRound();
-        } else {
+        if (status.isGameOver()) {
+            if(status.killedTarget() != null){
+                killedName = status.killedTarget().name();
+            }
+            if(status.isVictory()){
+                battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
+                startNextRound();
+            }
+            else{
+                battleLogView.getItems().add("Derrota... " + killedName + " tombou em combate");
+                controlsContainer.getChildren().clear();
+            }
+            updateAllUI();
+        }
+        else {
             updateAllUI();
             resetControls();
         }
@@ -111,16 +123,26 @@ public class BattleController {
     }
 
     private void executeEnemyAttack(){
-        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
+        BattleStatusRecord status = battleEngine.executeEnemyTurn();
+        String killedName = null;
 
-        CombatantRecord target = battleEngine.executeEnemyTurn();
-        battleLogView.getItems().add(currentAttacker.name() + " atacou " + target.name());
+        battleLogView.getItems().add(status.actionLog());
 
-        if (battleEngine.getPlayersQuantity() == 0) {
-            battleLogView.getItems().add("O herói foi derrotado. Fim de jogo.");
-            controlsContainer.getChildren().clear(); // Remove os controles
+        if (status.isGameOver()) {
+            if(status.killedTarget() != null){
+                killedName = status.killedTarget().name();
+            }
+            if(status.isVictory()){
+                battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
+                startNextRound();
+            }
+            else{
+                battleLogView.getItems().add("Derrota..." + killedName + " tombou em combate");
+                controlsContainer.getChildren().clear();
+            }
             updateAllUI();
-        } else {
+        }
+        else {
             updateAllUI();
             resetControls();
         }
