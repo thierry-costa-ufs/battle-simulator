@@ -106,9 +106,10 @@ public class BattleEngine {
         if(enemiesList.isEmpty()){
              isGameOver = true;
              isVictory= true;
-            if(playersList.isEmpty()){
-                isVictory = false;
-            }
+        }
+        else if(playersList.isEmpty()){
+            isGameOver = true;
+            isVictory = false;
         }
 
         return new BattleStatusRecord(
@@ -148,6 +149,12 @@ public class BattleEngine {
 
         playersLevelUp();
         loadHordeIntoBattle();
+    }
+
+    public void restartEngine(){
+        this.currentRound = 1;
+
+        this.startBattle();
     }
 
     // UTILS E BUSCAS INTERNAS
