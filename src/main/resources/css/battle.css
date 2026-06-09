@@ -138,5 +138,5 @@
 }
 
 .target-button {
-    -fx padding: 15px 25px;
+    -fx-padding: 15px 25px;
 }

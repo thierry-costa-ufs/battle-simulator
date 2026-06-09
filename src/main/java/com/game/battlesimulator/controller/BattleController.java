@@ -1,12 +1,9 @@
 package com.game.battlesimulator.controller;
 
-import com.game.battlesimulator.datastructure.CircularQueue;
-import com.game.battlesimulator.model.domain.Combatant;
-import com.game.battlesimulator.model.domain.Enemy;
-import com.game.battlesimulator.model.domain.Player;
-import com.game.battlesimulator.model.factory.BattleMenuFactory;
-import com.game.battlesimulator.model.factory.CombatantStatusFactory;
-import com.game.battlesimulator.model.factory.TurnOrderFactory;
+import com.game.battlesimulator.model.engine.BattleEngine;
+import com.game.battlesimulator.model.factory.*;
+import com.game.battlesimulator.model.payload.BattleStatusRecord;
+import com.game.battlesimulator.model.payload.CombatantRecord;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -16,93 +13,139 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class BattleController {
-    // ENEMY
+
+    //BATTLE ENGINE
+    private final BattleEngine battleEngine = new BattleEngine();
+
+    //ENEMY
     @FXML private VBox enemyStatusContainer;
     @FXML private VBox enemySpritesContainer;
 
-    // PLAYER
+    //PLAYER
     @FXML private VBox playerStatusContainer;
     @FXML private VBox playerSpriteContainer;
-    private Combatant hero;
 
-    // CONTROLS & LOG
+    //CONTROLS & LOG
     @FXML private ListView<String> battleLogView;
     @FXML private Button attackButton;
     @FXML private HBox turnOrderContainer;
     @FXML private VBox controlsContainer;
 
-    private CircularQueue turnQueue;
-    private List<Combatant> enemiesList;
-
     @FXML
     public void initialize() {
-        turnQueue = new CircularQueue();
-        enemiesList = new ArrayList<>();
-        Random random = new Random();
 
-        hero = new Player("Herói", 20,2);
-        turnQueue.enqueue(hero);
+        battleEngine.startBattle();
 
-        int goblinQuantity = random.nextInt(4) + 2;
-        char sufixo = 'A';
+        int enemiesQuantity = battleEngine.getEnemiesQuantity();
 
-        for (int i=0; i< goblinQuantity; i++) {
-            Combatant goblin = new Enemy("Goblin " + sufixo, 10, 1) ;
-            turnQueue.enqueue(goblin);
-            enemiesList.add(goblin);
-            sufixo++;
-        }
-
-        battleLogView.getItems().add("Cuidado! Uma horda com " + goblinQuantity + " goblins emboscou você!");
+        battleLogView.getItems().add("Cuidado! Uma horda com " + enemiesQuantity + " goblins emboscou você!");
         battleLogView.getItems().add("O que o herói vai fazer?");
 
+        updateAllUI();
+    }
+
+    private void startNextRound(){
+        battleEngine.prepareNextRound();
+        updateAllUI();
+    }
+
+    private void updateAllUI() {
         updatePlayerLifeBar();
         updateEnemyLifeBars();
-        updateTurnOrder(turnQueue);
+        updateTurnOrder();
+        updateEnemySprites();
     }
 
     private void updateEnemyLifeBars() {
         enemyStatusContainer.getChildren().clear();
-        for (Combatant goblin : enemiesList) {
-            VBox goblinBox = CombatantStatusFactory.createStatusNode(goblin, Pos.TOP_LEFT, false);
-            enemyStatusContainer.getChildren().add(goblinBox);
+        List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
+        for (CombatantRecord enemy : enemies) {
+            VBox enemyBox = CombatantStatusFactory.createStatusNode(enemy, Pos.TOP_LEFT, false);
+            enemyStatusContainer.getChildren().add(enemyBox);
         }
     }
 
     private void updatePlayerLifeBar() {
         playerStatusContainer.getChildren().clear();
-        VBox playerBox = CombatantStatusFactory.createStatusNode(hero, Pos.BOTTOM_RIGHT, true);
-        playerStatusContainer.getChildren().add(playerBox);
+        List<CombatantRecord> players = battleEngine.getPlayersRecords();
+        for(CombatantRecord player : players){
+            VBox playerBox = CombatantStatusFactory.createStatusNode(player, Pos.BOTTOM_RIGHT, true);
+            playerStatusContainer.getChildren().add(playerBox);
+        }
     }
 
     @FXML
     private void handleButtonClick(ActionEvent event) {
-        Combatant currentAttacker = turnQueue.getCombatantOnIndex(0);
+        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
 
-        if (currentAttacker instanceof Player) {
+        if (currentAttacker.isPlayer()) {
             showTargetSelectionGrid();
-        }
-        else {
-            battleLogView.getItems().add(currentAttacker.getName() + " está pensando...");
+        } else {
+            executeEnemyAttack();
         }
     }
 
     private void showTargetSelectionGrid() {
         controlsContainer.getChildren().clear();
-        GridPane targetGrid = BattleMenuFactory.createTargetGrid(enemiesList, this::executePlayerAttack);
+        List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
+        GridPane targetGrid = BattleMenuFactory.createTargetGrid(enemies, this::executePlayerAttack);
         controlsContainer.getChildren().add(targetGrid);
     }
 
-    private void executePlayerAttack(Combatant target) {
-        battleLogView.getItems().add(hero.getName() + " atacou " + target.getName() + "!");
-        turnQueue.rotateTurn();
-        updateTurnOrder(turnQueue);
-        resetControls();
+    private void executePlayerAttack(CombatantRecord target) {
+        BattleStatusRecord status = battleEngine.executeAttack(target.id());
+        String killedName = null;
+
+        battleLogView.getItems().add(status.actionLog());
+
+        if (status.isGameOver()) {
+            if(status.killedTarget() != null){
+                killedName = status.killedTarget().name();
+            }
+            if(status.isVictory()){
+                battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
+                startNextRound();
+            }
+            else{
+                battleLogView.getItems().add("Derrota... " + killedName + " tombou em combate");
+                controlsContainer.getChildren().clear();
+            }
+            updateAllUI();
+        }
+        else {
+            updateAllUI();
+            resetControls();
+        }
+        battleLogView.scrollTo(battleLogView.getItems().size() - 1);
+    }
+
+    private void executeEnemyAttack(){
+        BattleStatusRecord status = battleEngine.executeEnemyTurn();
+        String killedName = null;
+
+        battleLogView.getItems().add(status.actionLog());
+
+        if (status.isGameOver()) {
+            if(status.killedTarget() != null){
+                killedName = status.killedTarget().name();
+            }
+            if(status.isVictory()){
+                battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
+                startNextRound();
+            }
+            else{
+                battleLogView.getItems().add("Derrota..." + killedName + " tombou em combate");
+                controlsContainer.getChildren().clear();
+            }
+            updateAllUI();
+        }
+        else {
+            updateAllUI();
+            resetControls();
+        }
         battleLogView.scrollTo(battleLogView.getItems().size() - 1);
     }
 
@@ -111,9 +154,24 @@ public class BattleController {
         controlsContainer.getChildren().add(attackButton);
     }
 
-    public void updateTurnOrder(CircularQueue combatantQueue) {
+    public void updateTurnOrder() {
         turnOrderContainer.getChildren().clear();
-        List<Label> carouselLabels = TurnOrderFactory.createCarouselNodes(combatantQueue);
+        List<CombatantRecord> turnOrder = battleEngine.getTurnOrderRecords();
+        List<Label> carouselLabels = TurnOrderFactory.createCarouselNodes(turnOrder);
         turnOrderContainer.getChildren().addAll(carouselLabels);
+    }
+
+    private void updateEnemySprites() {
+        enemySpritesContainer.getChildren().clear();
+
+        List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
+
+        for (CombatantRecord enemy : enemies) {
+            if (!enemy.isDead()) {
+                javafx.scene.layout.Region sprite = new javafx.scene.layout.Region();
+                sprite.getStyleClass().add("enemy-sprite");
+                enemySpritesContainer.getChildren().add(sprite);
+            }
+        }
     }
 }
