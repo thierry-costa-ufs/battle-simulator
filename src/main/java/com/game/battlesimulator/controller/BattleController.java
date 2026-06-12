@@ -2,6 +2,7 @@ package com.game.battlesimulator.controller;
 
 import com.game.battlesimulator.model.engine.BattleEngine;
 import com.game.battlesimulator.model.factory.*;
+import com.game.battlesimulator.model.payload.BattleStatusRecord;
 import com.game.battlesimulator.model.payload.CombatantRecord;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,17 +39,18 @@ public class BattleController {
 
         battleEngine.startBattle();
 
-        int enemiesQuantity = battleEngine.getEnemiesQuantity();
+        updateAllUI();
+        resetControls();
 
+        int enemiesQuantity = battleEngine.getEnemiesQuantity();
         battleLogView.getItems().add("Cuidado! Uma horda com " + enemiesQuantity + " goblins emboscou você!");
         battleLogView.getItems().add("O que o herói vai fazer?");
-
-        updateAllUI();
     }
 
     private void startNextRound(){
         battleEngine.prepareNextRound();
         updateAllUI();
+        resetControls();
     }
 
     private void updateAllUI() {
@@ -87,6 +89,16 @@ public class BattleController {
         }
     }
 
+    private void handleRestartGame(){
+        battleEngine.restartEngine();
+
+        battleLogView.getItems().clear();
+        battleLogView.getItems().add("A jornada recomeça! Boa sorte dessa vez!");
+
+        updateAllUI();
+        resetControls();
+    }
+
     private void showTargetSelectionGrid() {
         controlsContainer.getChildren().clear();
         List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
@@ -95,15 +107,16 @@ public class BattleController {
     }
 
     private void executePlayerAttack(CombatantRecord target) {
-        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
+        BattleStatusRecord status = battleEngine.executeAttack(target.id());
 
-        CombatantRecord updatedTarget = battleEngine.executeAttack(target.id());
-        battleLogView.getItems().add(currentAttacker.name() + " atacou " + updatedTarget.name() + "!");
+        battleLogView.getItems().add(status.actionLog());
 
-        if (battleEngine.getEnemiesQuantity() == 0) {
-            battleLogView.getItems().add("A horda foi derrotada! Avançando de round...");
+        if (status.isGameOver()) {
+            battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
             startNextRound();
-        } else {
+
+        }
+        else {
             updateAllUI();
             resetControls();
         }
@@ -111,16 +124,25 @@ public class BattleController {
     }
 
     private void executeEnemyAttack(){
-        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
+        BattleStatusRecord status = battleEngine.executeEnemyTurn();
+        String killedName = null;
 
-        CombatantRecord target = battleEngine.executeEnemyTurn();
-        battleLogView.getItems().add(currentAttacker.name() + " atacou " + target.name());
+        battleLogView.getItems().add(status.actionLog());
 
-        if (battleEngine.getPlayersQuantity() == 0) {
-            battleLogView.getItems().add("O herói foi derrotado. Fim de jogo.");
-            controlsContainer.getChildren().clear(); // Remove os controles
+        if (status.isGameOver()) {
+            if(status.killedTarget() != null){
+                killedName = status.killedTarget().name();
+                battleLogView.getItems().add("Derrota..." + killedName + " tombou em combate");
+            }
             updateAllUI();
-        } else {
+            controlsContainer.getChildren().clear();
+            Button restartButton = new Button("Jogar Novamente");
+            restartButton.getStyleClass().add("action-button");
+
+            restartButton.setOnAction(e -> handleRestartGame());
+            controlsContainer.getChildren().add(restartButton);
+        }
+        else {
             updateAllUI();
             resetControls();
         }
@@ -129,6 +151,17 @@ public class BattleController {
 
     private void resetControls() {
         controlsContainer.getChildren().clear();
+        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
+
+        if(currentAttacker == null || currentAttacker.isPlayer()){
+            attackButton.setText("Atacar");
+            attackButton.setOnAction(e -> showTargetSelectionGrid());
+        }
+        else{
+            attackButton.setText("Próximo turno");
+            attackButton.setOnAction(e -> executeEnemyAttack());
+        }
+
         controlsContainer.getChildren().add(attackButton);
     }
 

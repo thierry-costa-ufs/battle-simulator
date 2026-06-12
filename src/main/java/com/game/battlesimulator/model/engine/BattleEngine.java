@@ -6,6 +6,7 @@ import com.game.battlesimulator.model.domain.Enemy;
 import com.game.battlesimulator.model.domain.Player;
 import com.game.battlesimulator.model.factory.EnemyFactory;
 import com.game.battlesimulator.model.factory.PlayerFactory;
+import com.game.battlesimulator.model.payload.BattleStatusRecord;
 import com.game.battlesimulator.model.payload.CombatantRecord;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class BattleEngine {
     }
 
     // MÉTODOS DE AÇÃO (REFATORADOS PARA USAR IDENTIFICADORES E RETORNAR RECORDS)
-    public CombatantRecord executeAttack(String targetId){
+    public BattleStatusRecord executeAttack(String targetId){
         Combatant attacker = turnQueue.getCombatantOnIndex(0);
         Combatant target = findCombatantById(targetId);
 
@@ -83,10 +84,17 @@ public class BattleEngine {
 
         target.setCurrentHealth(newHealth);
 
+        CombatantRecord killedInThisTurn = null;
+        String actionLog = target.getName() + " Foi atacado por " + attacker.getName();
+        boolean isGameOver = false;
+        boolean isVictory = true;
+
         if (!target.isAlive()) {
+            killedInThisTurn = toRecord(target);
             turnQueue.remove(target);
             enemiesList.remove(target);
             playersList.remove(target);
+            actionLog = target.getName() + " Foi derrotado!!";
         }
 
         if (getEnemiesQuantity() > 0 && getPlayersQuantity() > 0) {
@@ -95,10 +103,26 @@ public class BattleEngine {
             }
         }
 
-        return toRecord(target);
+        if(enemiesList.isEmpty()){
+             isGameOver = true;
+             isVictory= true;
+        }
+        else if(playersList.isEmpty()){
+            isGameOver = true;
+            isVictory = false;
+        }
+
+        return new BattleStatusRecord(
+                getPlayersRecords(),
+                getEnemiesRecords(),
+                actionLog,
+                isGameOver,
+                isVictory,
+                killedInThisTurn
+        );
     }
 
-    public CombatantRecord executeEnemyTurn(){
+    public BattleStatusRecord executeEnemyTurn(){
         int randomIndex = random.nextInt(playersList.size());
         Combatant target = playersList.get(randomIndex);
 
@@ -125,6 +149,12 @@ public class BattleEngine {
 
         playersLevelUp();
         loadHordeIntoBattle();
+    }
+
+    public void restartEngine(){
+        this.currentRound = 1;
+
+        this.startBattle();
     }
 
     // UTILS E BUSCAS INTERNAS
