@@ -39,17 +39,18 @@ public class BattleController {
 
         battleEngine.startBattle();
 
-        int enemiesQuantity = battleEngine.getEnemiesQuantity();
+        updateAllUI();
+        resetControls();
 
+        int enemiesQuantity = battleEngine.getEnemiesQuantity();
         battleLogView.getItems().add("Cuidado! Uma horda com " + enemiesQuantity + " goblins emboscou você!");
         battleLogView.getItems().add("O que o herói vai fazer?");
-
-        updateAllUI();
     }
 
     private void startNextRound(){
         battleEngine.prepareNextRound();
         updateAllUI();
+        resetControls();
     }
 
     private void updateAllUI() {
@@ -88,6 +89,16 @@ public class BattleController {
         }
     }
 
+    private void handleRestartGame(){
+        battleEngine.restartEngine();
+
+        battleLogView.getItems().clear();
+        battleLogView.getItems().add("A jornada recomeça! Boa sorte dessa vez!");
+
+        updateAllUI();
+        resetControls();
+    }
+
     private void showTargetSelectionGrid() {
         controlsContainer.getChildren().clear();
         List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
@@ -97,23 +108,13 @@ public class BattleController {
 
     private void executePlayerAttack(CombatantRecord target) {
         BattleStatusRecord status = battleEngine.executeAttack(target.id());
-        String killedName = null;
 
         battleLogView.getItems().add(status.actionLog());
 
         if (status.isGameOver()) {
-            if(status.killedTarget() != null){
-                killedName = status.killedTarget().name();
-            }
-            if(status.isVictory()){
-                battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
-                startNextRound();
-            }
-            else{
-                battleLogView.getItems().add("Derrota... " + killedName + " tombou em combate");
-                controlsContainer.getChildren().clear();
-            }
-            updateAllUI();
+            battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
+            startNextRound();
+
         }
         else {
             updateAllUI();
@@ -131,16 +132,15 @@ public class BattleController {
         if (status.isGameOver()) {
             if(status.killedTarget() != null){
                 killedName = status.killedTarget().name();
-            }
-            if(status.isVictory()){
-                battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
-                startNextRound();
-            }
-            else{
                 battleLogView.getItems().add("Derrota..." + killedName + " tombou em combate");
-                controlsContainer.getChildren().clear();
             }
             updateAllUI();
+            controlsContainer.getChildren().clear();
+            Button restartButton = new Button("Jogar Novamente");
+            restartButton.getStyleClass().add("action-button");
+
+            restartButton.setOnAction(e -> handleRestartGame());
+            controlsContainer.getChildren().add(restartButton);
         }
         else {
             updateAllUI();
@@ -151,6 +151,17 @@ public class BattleController {
 
     private void resetControls() {
         controlsContainer.getChildren().clear();
+        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
+
+        if(currentAttacker == null || currentAttacker.isPlayer()){
+            attackButton.setText("Atacar");
+            attackButton.setOnAction(e -> showTargetSelectionGrid());
+        }
+        else{
+            attackButton.setText("Próximo turno");
+            attackButton.setOnAction(e -> executeEnemyAttack());
+        }
+
         controlsContainer.getChildren().add(attackButton);
     }
 
