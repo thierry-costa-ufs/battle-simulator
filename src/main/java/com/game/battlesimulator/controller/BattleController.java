@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import java.util.List;
 
@@ -39,18 +40,22 @@ public class BattleController {
 
         battleEngine.startBattle();
 
-        updateAllUI();
-        resetControls();
-
         int enemiesQuantity = battleEngine.getEnemiesQuantity();
+
         battleLogView.getItems().add("Cuidado! Uma horda com " + enemiesQuantity + " goblins emboscou você!");
         battleLogView.getItems().add("O que o herói vai fazer?");
+
+        updateAllUI();
     }
 
     private void startNextRound(){
         battleEngine.prepareNextRound();
+
+        enemySpritesContainer.getChildren().clear();
+
+        battleLogView.getItems().add("Novo round iniciado!");
+
         updateAllUI();
-        resetControls();
     }
 
     private void updateAllUI() {
@@ -89,11 +94,11 @@ public class BattleController {
         }
     }
 
-    private void handleRestartGame(){
+    private void handleGameRestart() {
         battleEngine.restartEngine();
 
         battleLogView.getItems().clear();
-        battleLogView.getItems().add("A jornada recomeça! Boa sorte dessa vez!");
+        battleLogView.getItems().add("A jornada recomeça! Boa sorte desta vez.");
 
         updateAllUI();
         resetControls();
@@ -103,6 +108,8 @@ public class BattleController {
         controlsContainer.getChildren().clear();
         List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
         GridPane targetGrid = BattleMenuFactory.createTargetGrid(enemies, this::executePlayerAttack);
+
+        VBox.setVgrow(targetGrid, Priority.ALWAYS);
         controlsContainer.getChildren().add(targetGrid);
     }
 
@@ -111,10 +118,11 @@ public class BattleController {
 
         battleLogView.getItems().add(status.actionLog());
 
-        if (status.isGameOver()) {
+        if (status.isGameOver() && status.isVictory()) {
             battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
             startNextRound();
-
+            updateAllUI();
+            resetControls();
         }
         else {
             updateAllUI();
@@ -129,17 +137,15 @@ public class BattleController {
 
         battleLogView.getItems().add(status.actionLog());
 
-        if (status.isGameOver()) {
-            if(status.killedTarget() != null){
-                killedName = status.killedTarget().name();
-                battleLogView.getItems().add("Derrota..." + killedName + " tombou em combate");
-            }
+        if (status.isGameOver() && status.killedTarget() != null) {
+            killedName = status.killedTarget().name();
+            battleLogView.getItems().add("Derrota... " + killedName + " tombou em combate");
             updateAllUI();
+
             controlsContainer.getChildren().clear();
             Button restartButton = new Button("Jogar Novamente");
             restartButton.getStyleClass().add("action-button");
-
-            restartButton.setOnAction(e -> handleRestartGame());
+            restartButton.setOnAction(e -> handleGameRestart());
             controlsContainer.getChildren().add(restartButton);
         }
         else {
@@ -151,15 +157,14 @@ public class BattleController {
 
     private void resetControls() {
         controlsContainer.getChildren().clear();
-        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
 
-        if(currentAttacker == null || currentAttacker.isPlayer()){
+        CombatantRecord current = battleEngine.getCurrentAttackerRecord();
+        if (current != null && current.isPlayer()) {
             attackButton.setText("Atacar");
-            attackButton.setOnAction(e -> showTargetSelectionGrid());
-        }
-        else{
-            attackButton.setText("Próximo turno");
-            attackButton.setOnAction(e -> executeEnemyAttack());
+            attackButton.setOnAction(this::handleButtonClick);
+        } else {
+            attackButton.setText("Próximo Turno");
+            attackButton.setOnAction(this::handleButtonClick);
         }
 
         controlsContainer.getChildren().add(attackButton);
