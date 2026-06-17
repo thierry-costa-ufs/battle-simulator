@@ -24,17 +24,17 @@ public class BattleEngine {
 
     // ENEMIES
     private final EnemyFactory enemyFactory = new EnemyFactory();
-    private List<Combatant> enemiesList;
+    private CircularQueue enemiesList;
 
     // PLAYERS
     private final PlayerFactory playerFactory = new PlayerFactory();
-    private List<Combatant> playersList;
+    private CircularQueue playersList;
 
     // CONSTRUTORES
     public BattleEngine(){
         this.turnQueue = new CircularQueue();
-        this.enemiesList = new ArrayList<>();
-        this.playersList = new ArrayList<>();
+        this.enemiesList = new CircularQueue();
+        this.playersList = new CircularQueue();
     }
 
     // MÉTODOS DE CONTROLE DA BATALHA
@@ -53,7 +53,7 @@ public class BattleEngine {
 
         for(int i = 0; i < playersQuantity; i++){
             turnQueue.enqueue(players[i]);
-            playersList.add(players[i]);
+            playersList.enqueue(players[i]);
         }
         return playersQuantity;
     }
@@ -64,17 +64,17 @@ public class BattleEngine {
 
         for(int i = 0; i < enemiesQuantity; i++){
             turnQueue.enqueue(horde[i]);
-            enemiesList.add(horde[i]);
+            enemiesList.enqueue(horde[i]);
         }
         return enemiesQuantity;
     }
 
-    // MÉTODOS DE AÇÃO (REFATORADOS PARA USAR IDENTIFICADORES E RETORNAR RECORDS)
-    public BattleStatusRecord executeAttack(String targetId){
+    // MÉTODOS DE AÇÃO
+    public BattleStatusRecord executeAttack(String targetId) {
         Combatant attacker = turnQueue.getCombatantOnIndex(0);
         Combatant target = findCombatantById(targetId);
 
-        if(attacker == null || target == null){
+        if (attacker == null || target == null) {
             throw new IllegalArgumentException("Atacante ou alvo inválido!!");
         }
 
@@ -123,17 +123,17 @@ public class BattleEngine {
     }
 
     public BattleStatusRecord executeEnemyTurn(){
-        int randomIndex = random.nextInt(playersList.size());
-        Combatant target = playersList.get(randomIndex);
+        int randomIndex = random.nextInt(playersList.getSize());
+        Combatant target = playersList.getCombatantOnIndex(randomIndex);
 
         return executeAttack(target.getName());
     }
 
     private void playersLevelUp(){
-        for(int i = 0; i < playersList.size(); i++){
-            Player currentHero = (Player) playersList.get(i);
+        for(int i = 0; i < playersList.getSize(); i++){
+            Player currentHero = (Player) playersList.getCombatantOnIndex(i);
             currentHero.levelUp();
-            turnQueue.enqueue(playersList.get(i));
+            turnQueue.enqueue(playersList.getCombatantOnIndex(i));
         }
     }
 
@@ -154,20 +154,37 @@ public class BattleEngine {
     public void restartEngine(){
         this.currentRound = 1;
 
+        this.turnQueue = new CircularQueue();
+        this.enemiesList = new CircularQueue();
+        this.playersList = new CircularQueue();
+
         this.startBattle();
     }
 
+
     // UTILS E BUSCAS INTERNAS
     private Combatant findCombatantById(String id) {
-        for (Combatant c : playersList) {
-            if (c.getName().equals(id)) return c;
+        if (id == null) return null;
+        String safeId = id.trim();
+
+        for (int i = 0; i < playersList.getSize(); i++) {
+            Combatant c = playersList.getCombatantOnIndex(i);
+            if (c != null && c.getName() != null) {
+                String safeCombatantName = c.getName().trim();
+                if (safeCombatantName.equalsIgnoreCase(safeId)) return c;
+            }
         }
-        for (Combatant c : enemiesList) {
-            if (c.getName().equals(id)) return c;
+
+        for (int i = 0; i < enemiesList.getSize(); i++) {
+            Combatant c = enemiesList.getCombatantOnIndex(i);
+            if (c != null && c.getName() != null) {
+                String safeCombatantName = c.getName().trim();
+                if (safeCombatantName.equalsIgnoreCase(safeId)) return c;
+            }
         }
+
         return null;
     }
-
     private CombatantRecord toRecord(Combatant c) {
         if (c == null) return null;
         return new CombatantRecord(
@@ -185,11 +202,21 @@ public class BattleEngine {
     }
 
     public List<CombatantRecord> getEnemiesRecords() {
-        return enemiesList.stream().map(this::toRecord).collect(Collectors.toList());
+        List<CombatantRecord> records = new ArrayList<>();
+        for(int i = 0; i < enemiesList.getSize(); i++ ){
+            Combatant c = enemiesList.getCombatantOnIndex(i);
+            records.add(toRecord(c));
+        }
+        return records;
     }
 
     public List<CombatantRecord> getPlayersRecords() {
-        return playersList.stream().map(this::toRecord).collect(Collectors.toList());
+        List<CombatantRecord> records = new ArrayList<>();
+        for(int i = 0; i < playersList.getSize(); i++ ){
+            Combatant c = playersList.getCombatantOnIndex(i);
+            records.add(toRecord(c));
+        }
+        return records;
     }
 
     public List<CombatantRecord> getTurnOrderRecords() {
@@ -205,11 +232,11 @@ public class BattleEngine {
     }
 
     public int getEnemiesQuantity(){
-        return enemiesList.size();
+        return enemiesList.getSize();
     }
 
     public int getPlayersQuantity(){
-        return playersList.size();
+        return playersList.getSize();
     }
 
     public int getCurrentRound(){
