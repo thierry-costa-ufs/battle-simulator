@@ -14,7 +14,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import java.util.List;
 
 public class BattleController {
 
@@ -67,7 +66,7 @@ public class BattleController {
 
     private void updateEnemyLifeBars() {
         enemyStatusContainer.getChildren().clear();
-        List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
+        CombatantRecord[] enemies = battleEngine.getEnemiesRecords();
         for (CombatantRecord enemy : enemies) {
             VBox enemyBox = CombatantStatusFactory.createStatusNode(enemy, Pos.TOP_LEFT, false);
             enemyStatusContainer.getChildren().add(enemyBox);
@@ -76,7 +75,7 @@ public class BattleController {
 
     private void updatePlayerLifeBar() {
         playerStatusContainer.getChildren().clear();
-        List<CombatantRecord> players = battleEngine.getPlayersRecords();
+        CombatantRecord[] players = battleEngine.getPlayersRecords();
         for(CombatantRecord player : players){
             VBox playerBox = CombatantStatusFactory.createStatusNode(player, Pos.BOTTOM_RIGHT, true);
             playerStatusContainer.getChildren().add(playerBox);
@@ -106,7 +105,7 @@ public class BattleController {
 
     private void showTargetSelectionGrid() {
         controlsContainer.getChildren().clear();
-        List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
+        CombatantRecord[] enemies = battleEngine.getEnemiesRecords();
         GridPane targetGrid = BattleMenuFactory.createTargetGrid(enemies, this::executePlayerAttack);
 
         VBox.setVgrow(targetGrid, Priority.ALWAYS);
@@ -172,15 +171,15 @@ public class BattleController {
 
     public void updateTurnOrder() {
         turnOrderContainer.getChildren().clear();
-        List<CombatantRecord> turnOrder = battleEngine.getTurnOrderRecords();
-        List<Label> carouselLabels = TurnOrderFactory.createCarouselNodes(turnOrder);
+        CombatantRecord[] turnOrder = battleEngine.getTurnOrderRecords();
+        Label[] carouselLabels = TurnOrderFactory.createCarouselNodes(turnOrder);
         turnOrderContainer.getChildren().addAll(carouselLabels);
     }
 
     private void updateEnemySprites() {
         enemySpritesContainer.getChildren().clear();
 
-        List<CombatantRecord> enemies = battleEngine.getEnemiesRecords();
+        CombatantRecord[] enemies = battleEngine.getEnemiesRecords();
 
         for (CombatantRecord enemy : enemies) {
             if (!enemy.isDead()) {

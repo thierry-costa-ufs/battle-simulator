@@ -9,10 +9,7 @@ import com.game.battlesimulator.model.factory.PlayerFactory;
 import com.game.battlesimulator.model.payload.BattleStatusRecord;
 import com.game.battlesimulator.model.payload.CombatantRecord;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class BattleEngine {
 
@@ -104,8 +101,8 @@ public class BattleEngine {
         }
 
         if(enemiesList.isEmpty()){
-             isGameOver = true;
-             isVictory= true;
+            isGameOver = true;
+            isVictory= true;
         }
         else if(playersList.isEmpty()){
             isGameOver = true;
@@ -161,7 +158,6 @@ public class BattleEngine {
         this.startBattle();
     }
 
-
     // UTILS E BUSCAS INTERNAS
     private Combatant findCombatantById(String id) {
         if (id == null) return null;
@@ -201,31 +197,36 @@ public class BattleEngine {
         return toRecord(turnQueue.getCombatantOnIndex(0));
     }
 
-    public List<CombatantRecord> getEnemiesRecords() {
-        List<CombatantRecord> records = new ArrayList<>();
-        for(int i = 0; i < enemiesList.getSize(); i++ ){
+    public CombatantRecord[] getEnemiesRecords() {
+        int size = enemiesList.getSize();
+        CombatantRecord[] records = new CombatantRecord[size];
+
+        for(int i = 0; i < size; i++ ){
             Combatant c = enemiesList.getCombatantOnIndex(i);
-            records.add(toRecord(c));
+            records[i] = toRecord(c);
         }
         return records;
     }
 
-    public List<CombatantRecord> getPlayersRecords() {
-        List<CombatantRecord> records = new ArrayList<>();
-        for(int i = 0; i < playersList.getSize(); i++ ){
+    public CombatantRecord[] getPlayersRecords() {
+        int size = playersList.getSize();
+        CombatantRecord[] records = new CombatantRecord[size];
+
+        for(int i = 0; i < size; i++ ){
             Combatant c = playersList.getCombatantOnIndex(i);
-            records.add(toRecord(c));
+            records[i] = toRecord(c);
         }
         return records;
     }
 
-    public List<CombatantRecord> getTurnOrderRecords() {
-        List<CombatantRecord> order = new ArrayList<>();
-        int totalCombatants = getPlayersQuantity() + getEnemiesQuantity();
-        for (int i = 0; i < totalCombatants; i++) {
+    public CombatantRecord[] getTurnOrderRecords() {
+        int size = turnQueue.getSize();
+        CombatantRecord[] order = new CombatantRecord[size];
+
+        for (int i = 0; i < size; i++) {
             Combatant c = turnQueue.getCombatantOnIndex(i);
             if (c != null) {
-                order.add(toRecord(c));
+                order[i] = toRecord(c);
             }
         }
         return order;
