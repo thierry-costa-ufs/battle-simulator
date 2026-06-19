@@ -8,19 +8,25 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class BattleMenuFactory {
-    public static GridPane createTargetGrid(List<CombatantRecord> enemies, Consumer<CombatantRecord> onTargetSelected) {
+    public static GridPane createTargetGrid(CombatantRecord[] enemies, Consumer<CombatantRecord> onTargetSelected) {
         GridPane targetGrid = new GridPane();
         targetGrid.setHgap(8);
         targetGrid.setVgap(8);
         targetGrid.setAlignment(Pos.CENTER);
 
-        long aliveCount = enemies.stream().filter(e -> !e.isDead()).count();
+        int aliveCount = 0;
+        for (int i = 0; i < enemies.length; i++) {
+            if (!enemies[i].isDead()) {
+                aliveCount++;
+            }
+        }
 
-        int maxColumns = (aliveCount <= 3) ? (int) aliveCount : 3;
+        if (aliveCount == 0) return targetGrid;
+
+        int maxColumns = (aliveCount <= 3) ? aliveCount : 3;
         int maxRows = (int) Math.ceil((double) aliveCount / maxColumns);
 
         int row=0;
@@ -29,7 +35,7 @@ public class BattleMenuFactory {
         for (int i = 0; i < maxColumns; i++) {
             ColumnConstraints colConst = new ColumnConstraints();
             colConst.setHgrow(Priority.ALWAYS);
-            colConst.setPercentWidth(100.0 / maxColumns); // Divide a largura igualmente
+            colConst.setPercentWidth(100.0 / maxColumns);
             targetGrid.getColumnConstraints().add(colConst);
         }
 
@@ -39,7 +45,9 @@ public class BattleMenuFactory {
             targetGrid.getRowConstraints().add(rowConst);
         }
 
-        for (CombatantRecord enemy : enemies) {
+        for (int i = 0; i < enemies.length; i++) {
+            CombatantRecord enemy = enemies[i];
+
             if (!enemy.isDead()) {
                 Button btnTarget = new Button(enemy.name());
 
