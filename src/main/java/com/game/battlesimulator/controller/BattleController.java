@@ -4,6 +4,7 @@ import com.game.battlesimulator.model.engine.BattleEngine;
 import com.game.battlesimulator.view.factory.*;
 import com.game.battlesimulator.model.payload.BattleStatusRecord;
 import com.game.battlesimulator.model.payload.CombatantRecord;
+import com.game.battlesimulator.view.SceneManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -83,8 +84,12 @@ public class BattleController {
     }
 
     @FXML
-    private void handleButtonClick(ActionEvent event) {
-        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
+    private void handleBackToMenu() {
+        SceneManager.switchScene("/fxml/menu-view.fxml");
+    }
+
+    @FXML
+    private void handleButtonClick(ActionEvent event) {        CombatantRecord currentAttacker = battleEngine.getCurrentAttackerRecord();
 
         if (currentAttacker.isPlayer()) {
             showTargetSelectionGrid();

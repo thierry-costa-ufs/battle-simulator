@@ -20,6 +20,10 @@
     <HBox fx:id="turnOrderContainer" alignment="CENTER_LEFT" spacing="8" styleClass="turn-order-container">
     </HBox>
 
+    <HBox alignment="CENTER_RIGHT">
+        <Button text="Voltar ao Menu" styleClass="back-button" onAction="#handleBackToMenu"/>
+    </HBox>
+
     <HBox VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
         <VBox fx:id="enemyStatusContainer" alignment="TOP_LEFT" spacing="10">
         </VBox>

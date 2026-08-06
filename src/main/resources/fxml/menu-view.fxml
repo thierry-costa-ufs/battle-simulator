@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<VBox alignment="CENTER"
+      spacing="30.0"
+      xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.game.battlesimulator.controller.MenuController"
+      stylesheets="@../css/battle.css"
+      styleClass="battle-container">
+
+    <Label styleClass="title" text="BATTLE SIMULATOR"/>
+
+    <Label styleClass="label" text="Uma horda de goblins se aproxima..."/>
+
+    <Button text="Iniciar Batalha" styleClass="menu-button" onAction="#handleStartBattle"/>
+</VBox>
