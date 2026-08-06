@@ -2,3 +2,7 @@ target/
 .idea/
 *.iml
 .DS_Store
+
+# local-only agent memory
+/AGENTS.md
+/BATCHES.md

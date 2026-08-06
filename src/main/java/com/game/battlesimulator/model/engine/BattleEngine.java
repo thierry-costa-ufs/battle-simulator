@@ -75,11 +75,9 @@ public class BattleEngine {
             throw new IllegalArgumentException("Atacante ou alvo inválido!!");
         }
 
-        int currentHealth = target.getCurrentHealth();
         int damage = attacker.getAttackDamage();
-        int newHealth = Math.max(0, currentHealth - damage);
 
-        target.setCurrentHealth(newHealth);
+        target.takeDamage(damage);
 
         CombatantRecord killedInThisTurn = null;
         String actionLog = target.getName() + " Foi atacado por " + attacker.getName();
@@ -120,10 +118,14 @@ public class BattleEngine {
     }
 
     public BattleStatusRecord executeEnemyTurn(){
+        if (playersList.isEmpty()) {
+            return null;
+        }
+
         int randomIndex = random.nextInt(playersList.getSize());
         Combatant target = playersList.getCombatantOnIndex(randomIndex);
 
-        return executeAttack(target.getName());
+        return executeAttack(target.getId());
     }
 
     private void playersLevelUp(){
@@ -161,22 +163,15 @@ public class BattleEngine {
     // UTILS E BUSCAS INTERNAS
     private Combatant findCombatantById(String id) {
         if (id == null) return null;
-        String safeId = id.trim();
 
         for (int i = 0; i < playersList.getSize(); i++) {
             Combatant c = playersList.getCombatantOnIndex(i);
-            if (c != null && c.getName() != null) {
-                String safeCombatantName = c.getName().trim();
-                if (safeCombatantName.equalsIgnoreCase(safeId)) return c;
-            }
+            if (c != null && id.equals(c.getId())) return c;
         }
 
         for (int i = 0; i < enemiesList.getSize(); i++) {
             Combatant c = enemiesList.getCombatantOnIndex(i);
-            if (c != null && c.getName() != null) {
-                String safeCombatantName = c.getName().trim();
-                if (safeCombatantName.equalsIgnoreCase(safeId)) return c;
-            }
+            if (c != null && id.equals(c.getId())) return c;
         }
 
         return null;
@@ -184,7 +179,7 @@ public class BattleEngine {
     private CombatantRecord toRecord(Combatant c) {
         if (c == null) return null;
         return new CombatantRecord(
-                c.getName(),
+                c.getId(),
                 c.getName(),
                 c.getCurrentHealth(),
                 c.getMaxHealth(),
