@@ -6,3 +6,4 @@ target/
 # local-only agent memory
 /AGENTS.md
 /BATCHES.md
+/BATCH_*_LOG.md

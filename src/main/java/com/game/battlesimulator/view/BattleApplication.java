@@ -15,8 +15,6 @@ public class BattleApplication extends Application {
 
             Scene scene = new Scene(root, 800, 600);
 
-            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/battle.css")).toExternalForm());
-
             primaryStage.setTitle("Battle Simulator");
             primaryStage.setScene(scene);
             primaryStage.show();
