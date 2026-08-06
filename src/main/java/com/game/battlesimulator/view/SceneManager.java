@@ -7,11 +7,20 @@ import javafx.stage.Stage;
 
 public final class SceneManager {
     private static Stage stage;
+    private static int partySize = 1;
 
     private SceneManager() {}
 
     public static void init(Stage primaryStage) {
         stage = primaryStage;
+    }
+
+    public static void setPartySize(int size) {
+        partySize = size;
+    }
+
+    public static int getPartySize() {
+        return partySize;
     }
 
     public static void switchScene(String fxml) {

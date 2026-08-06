@@ -36,7 +36,6 @@
 
     <HBox VBox.vgrow="ALWAYS" alignment="BOTTOM_CENTER">
         <VBox fx:id="playerSpriteContainer" alignment="BOTTOM_LEFT">
-            <Region styleClass="player-sprite"/>
         </VBox>
 
         <Region HBox.hgrow="ALWAYS"/>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
@@ -15,6 +16,17 @@
     <Label styleClass="title" text="BATTLE SIMULATOR"/>
 
     <Label styleClass="label" text="Uma horda de goblins se aproxima..."/>
+
+    <Label styleClass="label" text="Quantos heróis na batalha?"/>
+
+    <HBox alignment="CENTER" spacing="10">
+        <Button text="1" styleClass="party-button" onAction="#handlePartySize1"/>
+        <Button text="2" styleClass="party-button" onAction="#handlePartySize2"/>
+        <Button text="3" styleClass="party-button" onAction="#handlePartySize3"/>
+        <Button text="4" styleClass="party-button" onAction="#handlePartySize4"/>
+    </HBox>
+
+    <Label fx:id="partySizeLabel" styleClass="label" text="Heróis: 1"/>
 
     <Button text="Iniciar Batalha" styleClass="menu-button" onAction="#handleStartBattle"/>
 </VBox>

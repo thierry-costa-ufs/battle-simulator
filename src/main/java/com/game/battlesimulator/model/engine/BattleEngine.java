@@ -14,6 +14,7 @@ import java.util.Random;
 public class BattleEngine {
 
     private int currentRound = 1;
+    private int partySize = 1;
     private final Random random = new Random();
 
     // QUEUE
@@ -36,16 +37,21 @@ public class BattleEngine {
 
     // MÉTODOS DE CONTROLE DA BATALHA
     public void startBattle(){
+        startBattle(this.partySize);
+    }
+
+    public void startBattle(int playersQty){
+        this.partySize = playersQty;
         turnQueue.clear();
         enemiesList.clear();
         playersList.clear();
 
-        loadPlayersIntoBattle();
+        loadPlayersIntoBattle(playersQty);
         loadHordeIntoBattle();
     }
 
-    private int loadPlayersIntoBattle(){
-        Player[] players = playerFactory.generatePlayer();
+    private int loadPlayersIntoBattle(int playersQty){
+        Player[] players = playerFactory.generatePlayers(playersQty);
         int playersQuantity = players.length;
 
         for(int i = 0; i < playersQuantity; i++){

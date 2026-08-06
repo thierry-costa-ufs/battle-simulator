@@ -157,6 +157,10 @@
     -fx-padding: 30px 60px;
 }
 
+.party-button {
+    -fx-padding: 20px 30px;
+}
+
 .back-button {
     -fx-padding: 6px 12px;
     -fx-font-size: 11px;
