@@ -38,7 +38,7 @@ public class BattleController {
     @FXML
     public void initialize() {
 
-        battleEngine.startBattle();
+        battleEngine.startBattle(SceneManager.getPartySize());
 
         int enemiesQuantity = battleEngine.getEnemiesQuantity();
 
@@ -63,6 +63,7 @@ public class BattleController {
         updateEnemyLifeBars();
         updateTurnOrder();
         updateEnemySprites();
+        updatePlayerSprites();
     }
 
     private void updateEnemyLifeBars() {
@@ -182,6 +183,18 @@ public class BattleController {
         CombatantRecord[] turnOrder = battleEngine.getTurnOrderRecords();
         Label[] carouselLabels = TurnOrderFactory.createCarouselNodes(turnOrder);
         turnOrderContainer.getChildren().addAll(carouselLabels);
+    }
+
+    private void updatePlayerSprites() {
+        playerSpriteContainer.getChildren().clear();
+
+        CombatantRecord[] players = battleEngine.getPlayersRecords();
+
+        for (CombatantRecord player : players) {
+            javafx.scene.layout.Region sprite = new javafx.scene.layout.Region();
+            sprite.getStyleClass().add("player-sprite");
+            playerSpriteContainer.getChildren().add(sprite);
+        }
     }
 
     private void updateEnemySprites() {

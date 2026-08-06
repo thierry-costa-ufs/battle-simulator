@@ -7,8 +7,16 @@ public class PlayerFactory {
     private final int baseHealth = 50;
     private final int baseAttack = 10;
 
-    // ponytail: 1 hero; array kept for shape symmetry with EnemyFactory
+    // ponytail: base stats fixed; growth lives ONLY in Player.levelUp()
+    public Player[] generatePlayers(int count){
+        Player[] players = new Player[count];
+        for (int i = 0; i < count; i++) {
+            players[i] = new Player("Hero" + (i + 1), baseHealth, baseAttack);
+        }
+        return players;
+    }
+
     public Player[] generatePlayer(){
-        return new Player[]{ new Player("Hero1", baseHealth, baseAttack) };
+        return generatePlayers(1);
     }
 }

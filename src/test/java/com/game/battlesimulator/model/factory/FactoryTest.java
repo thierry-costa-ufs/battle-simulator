@@ -55,4 +55,17 @@ class FactoryTest {
         assertEquals(50, hero.getCurrentHealth());
         assertEquals("Hero1", hero.getName());
     }
+
+    @Test
+    void generatePlayersReturnsRequestedCount() {
+        Player[] players = new PlayerFactory().generatePlayers(4);
+
+        assertEquals(4, players.length);
+        for (int i = 0; i < players.length; i++) {
+            assertEquals("Hero" + (i + 1), players[i].getName());
+            assertEquals(50, players[i].getMaxHealth());
+            assertEquals(10, players[i].getAttackDamage());
+            assertEquals(50, players[i].getCurrentHealth());
+        }
+    }
 }

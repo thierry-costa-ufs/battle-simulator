@@ -88,7 +88,7 @@ class BattleEngineTest {
 
     @Test
     void executeAttackTargetsById() {
-        String id = firstEnemyId();
+        String id = survivingEnemyId();
         int before = healthOf(id);
         int othersBefore = engine.getEnemiesQuantity() - 1;
 
@@ -97,6 +97,22 @@ class BattleEngineTest {
         int after = healthOf(id);
         assertTrue(after < before);
         assertEquals(othersBefore, engine.getEnemiesQuantity() - 1);
+    }
+
+    private String survivingEnemyId() {
+        for (CombatantRecord r : engine.getEnemiesRecords()) {
+            if (r.maxHealth() > 10) return r.id();
+        }
+        return firstEnemyId();
+    }
+
+    @Test
+    void startBattleWithPartyOfThree() {
+        BattleEngine multiEngine = new BattleEngine();
+        multiEngine.startBattle(3);
+
+        assertEquals(3, multiEngine.getPlayersQuantity());
+        assertEquals(3, multiEngine.getPlayersRecords().length);
     }
 
     private int healthOf(String id) {
