@@ -69,7 +69,7 @@ src/main/java/com/game/battlesimulator/
 │   │   ├── BattleMenuFactory.java # Construtor dinâmico do Grid de alvos
 │   │   ├── CombatantStatusFactory.java # Construtor das barras de vida e status
 │   │   ├── TurnOrderFactory.java  # Construtor do carrossel visual de turnos
-│   │   ├── PlayerFactory.java     # Gerador de atributos do herói por round
+│   │   ├── PlayerFactory.java     # Cria o herói base; crescimento via levelUp por round
 │   │   └── EnemyFactory.java      # Gerador de hordas aleatórias e escaláveis
 │   │
 │   └── payload/
