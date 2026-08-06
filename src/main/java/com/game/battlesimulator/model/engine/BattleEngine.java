@@ -45,7 +45,7 @@ public class BattleEngine {
     }
 
     private int loadPlayersIntoBattle(){
-        Player[] players = playerFactory.generatePlayer(currentRound);
+        Player[] players = playerFactory.generatePlayer();
         int playersQuantity = players.length;
 
         for(int i = 0; i < playersQuantity; i++){
