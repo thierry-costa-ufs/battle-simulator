@@ -1,4 +1,4 @@
-package com.game.battlesimulator.model.factory;
+package com.game.battlesimulator.view.factory;
 
 import com.game.battlesimulator.model.payload.CombatantRecord;
 import javafx.geometry.Pos;

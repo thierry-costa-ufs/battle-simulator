@@ -1,7 +1,7 @@
 package com.game.battlesimulator.controller;
 
 import com.game.battlesimulator.model.engine.BattleEngine;
-import com.game.battlesimulator.model.factory.*;
+import com.game.battlesimulator.view.factory.*;
 import com.game.battlesimulator.model.payload.BattleStatusRecord;
 import com.game.battlesimulator.model.payload.CombatantRecord;
 import javafx.event.ActionEvent;
