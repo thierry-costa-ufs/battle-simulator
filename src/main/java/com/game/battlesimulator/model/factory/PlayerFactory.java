@@ -2,17 +2,12 @@ package com.game.battlesimulator.model.factory;
 
 import com.game.battlesimulator.model.domain.Player;
 
-import java.util.Random;
-
 public class PlayerFactory {
 
     private int baseHealth = 50;
     private int healthGrowth = 40;
     private int baseAttack = 10;
     private int attackGrowth = 5;
-
-    public PlayerFactory(){
-    }
 
     public Player[] generatePlayer(int currentRound){
         int playersQuantity = 1;

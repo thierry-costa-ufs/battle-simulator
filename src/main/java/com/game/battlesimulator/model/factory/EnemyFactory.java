@@ -2,8 +2,6 @@ package com.game.battlesimulator.model.factory;
 
 import com.game.battlesimulator.model.domain.Enemy;
 
-import java.util.Random;
-
 public class EnemyFactory {
 
     private int minEnemys = 2;
@@ -15,9 +13,6 @@ public class EnemyFactory {
     private int baseMinAttack = 2;
     private int baseMaxAttack = 5;
     private int attackGrowth = 2;
-
-    public EnemyFactory(){
-    };
 
     public Enemy[] generateHorde(int currentRound) {
         int enemiesQnt = (int) (Math.random() * (maxEnemys - minEnemys + 1) + minEnemys);

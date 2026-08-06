@@ -8,7 +8,6 @@ public abstract class Combatant {
     protected int currentHealth;
     protected int maxHealth;
     protected int attackDamage;
-    private boolean isPlayer;
 
     public Combatant(String name, int maxHealth, int attackDamage, boolean isPlayer) {
         this.id = (isPlayer ? "Hero-" : "Enemy-") + nextId++;
@@ -16,7 +15,6 @@ public abstract class Combatant {
         this.maxHealth = maxHealth;
         currentHealth = maxHealth;
         this.attackDamage = attackDamage;
-        this.isPlayer = isPlayer;
     }
 
     // METHODS
@@ -34,9 +32,4 @@ public abstract class Combatant {
     public int getCurrentHealth() {return currentHealth;}
     public int getMaxHealth() {return maxHealth;}
     public int getAttackDamage() {return attackDamage;}
-    // SETTERS
-    public void setName(String name) {this.name = name;}
-    public void setCurrentHealth(int currentHealth) {this.currentHealth = currentHealth;}
-    public void setMaxHealth(int maxHealth) {this.maxHealth = maxHealth;}
-    public void setAttackDamage(int attackDamage) {this.attackDamage = attackDamage;}
 }
