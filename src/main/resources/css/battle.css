@@ -142,3 +142,22 @@
     -fx-font-weight: bold;
     -fx-padding: 15px 20px;
     }
+
+/* ==========================================================================
+   Menu
+   ========================================================================== */
+.title {
+    -fx-font-family: "Courier New", "monospace";
+    -fx-font-weight: 900;
+    -fx-font-size: 42px;
+    -fx-text-fill: #1A1A1A;
+}
+
+.menu-button {
+    -fx-padding: 30px 60px;
+}
+
+.back-button {
+    -fx-padding: 6px 12px;
+    -fx-font-size: 11px;
+}

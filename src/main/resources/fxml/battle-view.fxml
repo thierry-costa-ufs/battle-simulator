@@ -18,6 +18,8 @@
       styleClass="battle-container">
 
     <HBox fx:id="turnOrderContainer" alignment="CENTER_LEFT" spacing="8" styleClass="turn-order-container">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Voltar ao Menu" styleClass="back-button" onAction="#handleBackToMenu"/>
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
