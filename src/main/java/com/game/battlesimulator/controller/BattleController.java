@@ -132,6 +132,9 @@ public class BattleController {
 
     private void executeEnemyAttack(){
         BattleStatusRecord status = battleEngine.executeEnemyTurn();
+
+        if (status == null) return;
+
         String killedName = null;
 
         battleLogView.getItems().add(status.actionLog());
