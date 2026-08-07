@@ -23,6 +23,7 @@ public class CombatantStatusFactory {
         double lifePercentage = combatant.getHealthPercentage();
         ProgressBar lifeBar = new ProgressBar(lifePercentage);
         lifeBar.getStyleClass().add("progress-bar");
+        lifeBar.getStyleClass().add(hpColorClass(lifePercentage));
 
         String hpText = "[" + combatant.currentHealth() + "/" + combatant.maxHealth() + "]";
 
@@ -47,5 +48,11 @@ public class CombatantStatusFactory {
 
         box.getChildren().addAll(lblName, hpBarRow);
         return box;
+    }
+
+    private static String hpColorClass(double percentage) {
+        if (percentage > 0.5) return "hp-bar-green";
+        if (percentage > 0.2) return "hp-bar-yellow";
+        return "hp-bar-red";
     }
 }

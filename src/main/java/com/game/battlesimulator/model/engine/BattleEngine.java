@@ -119,7 +119,9 @@ public class BattleEngine {
                 actionLog,
                 isGameOver,
                 isVictory,
-                killedInThisTurn
+                killedInThisTurn,
+                target.getId(),
+                damage
         );
     }
 
@@ -189,7 +191,8 @@ public class BattleEngine {
                 c.getName(),
                 c.getCurrentHealth(),
                 c.getMaxHealth(),
-                c instanceof Player
+                c instanceof Player,
+                c.getSpriteIndex()
         );
     }
 

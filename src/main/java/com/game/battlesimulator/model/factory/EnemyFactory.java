@@ -29,7 +29,7 @@ public class EnemyFactory {
             int maxHealth = (int) (Math.random() * (currentmaxMaxHealth - currentMinMaxHealth + 1) + currentMinMaxHealth);
             int attackDamage = (int) (Math.random() * (currentmaxAttackDamage - currentminAttackDamage + 1) + currentminAttackDamage);
 
-            Enemy enemy = new Enemy("Inimigo" + (i + 1), maxHealth, attackDamage);
+            Enemy enemy = new Enemy("Enemy-" + (i + 1), "Inimigo" + (i + 1), maxHealth, attackDamage, i + 1);
             enemiesList[i] = enemy;
         }
         return enemiesList;

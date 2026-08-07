@@ -14,26 +14,30 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BattleController {
 
     //BATTLE ENGINE
     private final BattleEngine battleEngine = new BattleEngine();
 
-    //ENEMY
-    @FXML private VBox enemyStatusContainer;
-    @FXML private VBox enemySpritesContainer;
-
-    //PLAYER
-    @FXML private VBox playerStatusContainer;
-    @FXML private VBox playerSpriteContainer;
+    //COMBATANT ROWS
+    @FXML private HBox enemySpritesContainer;
+    @FXML private HBox playerSpriteContainer;
 
     //CONTROLS & LOG
     @FXML private ListView<String> battleLogView;
     @FXML private Button attackButton;
     @FXML private HBox turnOrderContainer;
     @FXML private VBox controlsContainer;
+    @FXML private StackPane overlayRoot;
+
+    private final Map<String, SpriteView> playerSprites = new HashMap<>();
+    private final Map<String, SpriteView> enemySprites = new HashMap<>();
 
     @FXML
     public void initialize() {
@@ -51,36 +55,53 @@ public class BattleController {
     private void startNextRound(){
         battleEngine.prepareNextRound();
 
-        enemySpritesContainer.getChildren().clear();
-
         battleLogView.getItems().add("Novo round iniciado!");
 
         updateAllUI();
+        resetControls();
     }
 
     private void updateAllUI() {
-        updatePlayerLifeBar();
-        updateEnemyLifeBars();
+        updateEnemyRows();
+        updatePlayerRows();
         updateTurnOrder();
-        updateEnemySprites();
-        updatePlayerSprites();
     }
 
-    private void updateEnemyLifeBars() {
-        enemyStatusContainer.getChildren().clear();
+    private void updateEnemyRows() {
+        enemySpritesContainer.getChildren().clear();
+        enemySprites.clear();
+
         CombatantRecord[] enemies = battleEngine.getEnemiesRecords();
         for (CombatantRecord enemy : enemies) {
-            VBox enemyBox = CombatantStatusFactory.createStatusNode(enemy, Pos.TOP_LEFT, false);
-            enemyStatusContainer.getChildren().add(enemyBox);
+            SpriteView sprite = new SpriteView(false, enemy.spriteIndex());
+            if (enemy.isDead()) {
+                sprite.markDead();
+            }
+            enemySprites.put(enemy.id(), sprite);
+
+            VBox status = CombatantStatusFactory.createStatusNode(enemy, Pos.TOP_CENTER, false);
+            VBox unit = new VBox(8, sprite, status);
+            unit.setAlignment(Pos.TOP_CENTER);
+            enemySpritesContainer.getChildren().add(unit);
         }
     }
 
-    private void updatePlayerLifeBar() {
-        playerStatusContainer.getChildren().clear();
+    private void updatePlayerRows() {
+        playerSpriteContainer.getChildren().clear();
+        playerSprites.clear();
+
         CombatantRecord[] players = battleEngine.getPlayersRecords();
-        for(CombatantRecord player : players){
-            VBox playerBox = CombatantStatusFactory.createStatusNode(player, Pos.BOTTOM_RIGHT, true);
-            playerStatusContainer.getChildren().add(playerBox);
+        for (CombatantRecord player : players) {
+            SpriteView sprite = new SpriteView(true, player.spriteIndex());
+            if (player.isDead()) {
+                sprite.markDead();
+            }
+            playerSprites.put(player.id(), sprite);
+
+            VBox status = CombatantStatusFactory.createStatusNode(player, Pos.BOTTOM_CENTER, true);
+            VBox unit = new VBox(8, sprite, status);
+            unit.setAlignment(Pos.BOTTOM_CENTER);
+            playerSpriteContainer.getChildren().add(unit);
         }
     }
 
@@ -111,6 +132,8 @@ public class BattleController {
 
     private void showTargetSelectionGrid() {
         controlsContainer.getChildren().clear();
+        controlsContainer.setPrefHeight(220);
+
         CombatantRecord[] enemies = battleEngine.getEnemiesRecords();
         GridPane targetGrid = BattleMenuFactory.createTargetGrid(enemies, this::executePlayerAttack);
 
@@ -124,14 +147,14 @@ public class BattleController {
         battleLogView.getItems().add(status.actionLog());
 
         if (status.isGameOver() && status.isVictory()) {
-            battleLogView.getItems().add("Vitória! A horda foi derrotada! Avançando de round...");
-            startNextRound();
+            battleLogView.getItems().add("Vitória! A horda foi derrotada!");
             updateAllUI();
-            resetControls();
+            showOverlay(true);
         }
         else {
             updateAllUI();
             resetControls();
+            showHitOn(status.hitTargetId(), status.hitDamage());
         }
         battleLogView.scrollTo(battleLogView.getItems().size() - 1);
     }
@@ -141,30 +164,54 @@ public class BattleController {
 
         if (status == null) return;
 
-        String killedName = null;
-
         battleLogView.getItems().add(status.actionLog());
 
-        if (status.isGameOver() && status.killedTarget() != null) {
-            killedName = status.killedTarget().name();
-            battleLogView.getItems().add("Derrota... " + killedName + " tombou em combate");
+        if (status.isGameOver() && !status.isVictory() && status.killedTarget() != null) {
+            battleLogView.getItems().add("Derrota... " + status.killedTarget().name() + " tombou em combate");
             updateAllUI();
-
-            controlsContainer.getChildren().clear();
-            Button restartButton = new Button("Jogar Novamente");
-            restartButton.getStyleClass().add("action-button");
-            restartButton.setOnAction(e -> handleGameRestart());
-            controlsContainer.getChildren().add(restartButton);
+            showOverlay(false);
         }
         else {
             updateAllUI();
             resetControls();
+            showHitOn(status.hitTargetId(), status.hitDamage());
         }
         battleLogView.scrollTo(battleLogView.getItems().size() - 1);
     }
 
+    private void showHitOn(String combatantId, int damage) {
+        if (combatantId == null || damage <= 0) return;
+
+        SpriteView sprite = playerSprites.get(combatantId);
+        if (sprite == null) {
+            sprite = enemySprites.get(combatantId);
+        }
+        if (sprite != null) {
+            sprite.showHit(damage);
+        }
+    }
+
+    private void showOverlay(boolean victory) {
+        VBox overlay = OverlayViewFactory.createOverlay(victory, battleEngine.getCurrentRound(), this::handleOverlayAction);
+        overlayRoot.getChildren().clear();
+        overlayRoot.getChildren().add(overlay);
+        overlayRoot.setVisible(true);
+    }
+
+    private void handleOverlayAction(OverlayViewFactory.OverlayAction action) {
+        overlayRoot.setVisible(false);
+        overlayRoot.getChildren().clear();
+
+        switch (action) {
+            case CONTINUE -> startNextRound();
+            case RESTART -> handleGameRestart();
+            case MENU -> SceneManager.switchScene("/fxml/menu-view.fxml");
+        }
+    }
+
     private void resetControls() {
         controlsContainer.getChildren().clear();
+        controlsContainer.setPrefHeight(110);
 
         CombatantRecord current = battleEngine.getCurrentAttackerRecord();
         if (current != null && current.isPlayer()) {
@@ -183,31 +230,5 @@ public class BattleController {
         CombatantRecord[] turnOrder = battleEngine.getTurnOrderRecords();
         Label[] carouselLabels = TurnOrderFactory.createCarouselNodes(turnOrder);
         turnOrderContainer.getChildren().addAll(carouselLabels);
-    }
-
-    private void updatePlayerSprites() {
-        playerSpriteContainer.getChildren().clear();
-
-        CombatantRecord[] players = battleEngine.getPlayersRecords();
-
-        for (CombatantRecord player : players) {
-            javafx.scene.layout.Region sprite = new javafx.scene.layout.Region();
-            sprite.getStyleClass().add("player-sprite");
-            playerSpriteContainer.getChildren().add(sprite);
-        }
-    }
-
-    private void updateEnemySprites() {
-        enemySpritesContainer.getChildren().clear();
-
-        CombatantRecord[] enemies = battleEngine.getEnemiesRecords();
-
-        for (CombatantRecord enemy : enemies) {
-            if (!enemy.isDead()) {
-                javafx.scene.layout.Region sprite = new javafx.scene.layout.Region();
-                sprite.getStyleClass().add("enemy-sprite");
-                enemySpritesContainer.getChildren().add(sprite);
-            }
-        }
     }
 }

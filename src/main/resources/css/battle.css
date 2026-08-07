@@ -1,167 +1,464 @@
 /* ==========================================================================
-   Configurações Globais e Tipografia Base
+   BATTLE SIMULATOR — Poké-Yellow indie reinterpretation
+   Themed via JavaFX looked-up colors (-fx-* defined per .theme-* class).
+   Palette: cream/ink/gold (yellow) | pea/ink/green (gb) | gray/black (mono)
+   HP tri-color + defeat red stay constant (semantic, not themed).
    ========================================================================== */
+
+@font-face {
+    font-family: 'Press Start 2P';
+    src: url('../fonts/PressStart2P-Regular.ttf');
+}
+
+/* ---------------------------------------------------------------- themes */
+.theme-yellow {
+    -fx-canvas-1: #F5EBD3;
+    -fx-canvas-2: #EAD9B5;
+    -fx-panel: #FBF4E6;
+    -fx-tile: #F2E2C0;
+    -fx-ink: #241B12;
+    -fx-ink-soft: #6B5D4C;
+    -fx-chip: #3A2E22;
+    -fx-fill-dark: #241B12;
+    -fx-accent: #F6B400;
+    -fx-accent-deep: #D99B00;
+    -fx-on-dark: #E8D9BC;
+    -fx-shadow: #241B12;
+}
+
+.theme-gb {
+    -fx-canvas-1: #CFE8B0;
+    -fx-canvas-2: #B4D88C;
+    -fx-panel: #E0F0C8;
+    -fx-tile: #D4E8B8;
+    -fx-ink: #0F380F;
+    -fx-ink-soft: #4C7048;
+    -fx-chip: #1E4D1E;
+    -fx-fill-dark: #0F380F;
+    -fx-accent: #5CB85C;
+    -fx-accent-deep: #3E8E3E;
+    -fx-on-dark: #D8E8C0;
+    -fx-shadow: #0F380F;
+}
+
+.theme-mono {
+    -fx-canvas-1: #F0F0F0;
+    -fx-canvas-2: #E0E0E0;
+    -fx-panel: #FAFAFA;
+    -fx-tile: #E8E8E8;
+    -fx-ink: #111111;
+    -fx-ink-soft: #666666;
+    -fx-chip: #222222;
+    -fx-fill-dark: #111111;
+    -fx-accent: #333333;
+    -fx-accent-deep: #000000;
+    -fx-on-dark: #F0F0F0;
+    -fx-shadow: #111111;
+}
+
+.root {
+    -fx-font-family: "Press Start 2P", "Courier New", "monospace";
+    -fx-font-smoothing-type: gray;
+}
+
+/* ---------------------------------------------------------------- canvas */
 .battle-container {
-    -fx-background-color: #F0F0F0;
-    -fx-padding: 15px;
+    -fx-background-color: linear-gradient(to bottom, -fx-canvas-1, -fx-canvas-2);
+    -fx-padding: 14px;
     -fx-min-width: 800px;
     -fx-min-height: 600px;
+    -fx-border-color: -fx-ink;
+    -fx-border-width: 6;
+    -fx-border-insets: -6;
 }
 
 .label {
-    -fx-font-family: "Courier New", "monospace";
-    -fx-font-weight: 800;
-    -fx-font-size: 14px;
-    -fx-text-fill: #1A1A1A;
+    -fx-font-family: "Press Start 2P", "monospace";
+    -fx-font-size: 11px;
+    -fx-text-fill: -fx-ink;
 }
 
 .hp-text {
     -fx-font-family: "Courier New", "monospace";
     -fx-font-size: 11px;
-    -fx-text-fill: #555555;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-ink-soft;
 }
 
-/* ==========================================================================
-   Sistema de Turnos
-   ========================================================================== */
+/* ------------------------------------------------------- GB-style frames */
+.panel-frame {
+    -fx-background-color: -fx-panel;
+    -fx-background-radius: 10;
+    -fx-border-color: -fx-ink;
+    -fx-border-width: 3;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, -fx-shadow, 0, 0, 4, 5);
+}
+
+/* ---------------------------------------------------------- turn ribbon */
 .turn-order-container {
-    -fx-background-color: #fff;
-    -fx-padding: 0px 20px;
-    -fx-min-height: 50px;
-    -fx-max-height: 50px;
-    -fx-alignment: center;
-    -fx-spacing: 15px;
-    -fx-border-color: #1A1A1A;
-    -fx-border-width: 2px;
+    -fx-background-color: -fx-fill-dark;
+    -fx-padding: 0px 24px;
+    -fx-min-height: 44px;
+    -fx-max-height: 44px;
+    -fx-alignment: center-left;
+    -fx-spacing: 12px;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+
+.turn-scroll,
+.turn-scroll .viewport,
+.turn-scroll .corner {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.turn-scroll .scroll-bar,
+.turn-scroll .scroll-bar .track,
+.turn-scroll .scroll-bar .track-background {
+    -fx-background-color: -fx-fill-dark;
+}
+
+.turn-scroll .scroll-bar .thumb {
+    -fx-background-color: -fx-accent;
+}
+
+.turn-scroll .scroll-bar .increment-button,
+.turn-scroll .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
 }
 
 .turn-title-label {
-    -fx-font-size: 11px;
-    -fx-text-fill: #1A1A1A;
-    -fx-font-weight: 900;
-    -fx-letter-spacing: 1px;
+    -fx-font-size: 10px;
+    -fx-text-fill: -fx-accent;
 }
 
 .carousel-item {
-    -fx-min-width: 80px;
-    -fx-max-width: 80px;
-    -fx-font-size: 11px;
-    -fx-font-weight: 900;
-    -fx-padding: 4px 8px;
+    -fx-min-width: 108px;
+    -fx-max-width: 108px;
+    -fx-font-size: 9px;
+    -fx-padding: 6px 8px;
     -fx-alignment: center;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
-    -fx-border-color: #1A1A1A;
-    -fx-border-width: 2px;
+    -fx-background-color: -fx-chip;
+    -fx-background-radius: 6;
+    -fx-text-fill: -fx-on-dark;
 }
 
 .carousel-item-active {
-    -fx-background-color: #fff;
-    -fx-text-fill: #1A1A1A;
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: -fx-fill-dark;
 }
 
 .carousel-item-queue {
-    -fx-background-color: #F0F0F0;
-    -fx-text-fill: #1A1A1A;
+    -fx-opacity: 0.85;
 }
 
-/* ==========================================================================
-   Barras de Progresso
-   ========================================================================== */
+.carousel-item-dead {
+    -fx-opacity: 0.30;
+}
+
+/* -------------------------------------------------------------- HP bars */
 .progress-bar {
-    -fx-pref-width: 100px;
-    -fx-pref-height: 10px;
+    -fx-pref-width: 90px;
+    -fx-pref-height: 12px;
 }
 
 .progress-bar .track {
-    -fx-background-color: #fff;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
-    -fx-border-color: #1A1A1A;
-    -fx-border-width: 1px;
+    -fx-background-color: -fx-panel;
+    -fx-border-color: -fx-ink;
+    -fx-border-width: 2;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
 }
 
 .progress-bar .bar {
-    -fx-background-color: #EF4444;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
+    -fx-background-color: #5FA94B;
+    -fx-background-radius: 3;
 }
 
-/* ==========================================================================
-   Sprites
-   ========================================================================== */
-.enemy-sprite, .player-sprite {
+.hp-bar-yellow .bar { -fx-background-color: #E8C034; }
+.hp-bar-red .bar    { -fx-background-color: #D9483B; }
+
+/* ------------------------------------------------- HP box (status rows) */
+.player-hp-row,
+.enemy-hp-row {
+    -fx-background-color: -fx-panel;
+    -fx-background-radius: 10;
+    -fx-border-color: -fx-ink;
+    -fx-border-width: 3;
+    -fx-border-radius: 10;
+    -fx-padding: 6px 10px;
+    -fx-spacing: 5px;
+    -fx-effect: dropshadow(gaussian, -fx-shadow, 0, 0, 4, 5);
+}
+
+/* ---------------------------------------------------------------- sprites */
+.player-sprite,
+.enemy-sprite {
     -fx-min-width: 64px;
     -fx-min-height: 64px;
+    -fx-background-color: -fx-tile;
+    -fx-background-radius: 50%;
     -fx-background-size: contain;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
+    -fx-effect: dropshadow(gaussian, -fx-shadow, 0, 0, 0, 5);
 }
 
-.enemy-sprite {
-    -fx-background-image: url('../images/enemy.png');
+.player-sprite-1 { -fx-background-image: url('../images/hero-1.png'); }
+.player-sprite-2 { -fx-background-image: url('../images/hero-2.png'); }
+.player-sprite-3 { -fx-background-image: url('../images/hero-3.png'); }
+.player-sprite-4 { -fx-background-image: url('../images/hero-4.png'); }
+
+.enemy-sprite-1 { -fx-background-image: url('../images/enemy-1.png'); }
+.enemy-sprite-2 { -fx-background-image: url('../images/enemy-2.png'); }
+.enemy-sprite-3 { -fx-background-image: url('../images/enemy-3.png'); }
+.enemy-sprite-4 { -fx-background-image: url('../images/enemy-4.png'); }
+.enemy-sprite-5 { -fx-background-image: url('../images/enemy-5.png'); }
+
+.sprite-dead {
+    -fx-opacity: 0.30;
 }
 
-.player-sprite {
-    -fx-background-image: url('../images/hero.png');
+.damage-float {
+    -fx-font-family: "Courier New", "monospace";
+    -fx-font-size: 20px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #D9483B;
+    -fx-effect: dropshadow(gaussian, rgba(251, 244, 230, 0.9), 0, 0, 1, 2);
+    -fx-translate-y: -14px;
 }
 
-/* ==========================================================================
-   Controles e Log de Batalha
-   ========================================================================== */
+/* ------------------------------------------------------- log (message box) */
 .list-view {
-    -fx-background-color: #fff;
-    -fx-border-color: #1A1A1A;
-    -fx-border-width: 2px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
+    -fx-background-color: -fx-panel;
+    -fx-border-color: -fx-ink;
+    -fx-border-width: 3;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, -fx-shadow, 0, 0, 4, 5);
 }
 
 .list-view .list-cell {
     -fx-background-color: transparent;
-    -fx-text-fill: #1A1A1A;
+    -fx-text-fill: -fx-ink;
     -fx-font-family: "Courier New", "monospace";
-    -fx-padding: 4px;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 5px;
 }
 
+.list-view .list-cell:filled:hover {
+    -fx-background-color: -fx-tile;
+}
+
+.list-view .scroll-bar,
+.list-view .scroll-bar .track,
+.list-view .scroll-bar .track-background {
+    -fx-background-color: -fx-panel;
+}
+
+.list-view .scroll-bar .thumb {
+    -fx-background-color: -fx-ink-soft;
+}
+
+.list-view .scroll-bar .increment-button,
+.list-view .scroll-bar .decrement-button,
+.list-view .scroll-bar .corner {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* ------------------------------------------------------------- controls */
+.controls-container {
+    -fx-border-width: 3;
+    -fx-border-radius: 10;
+    -fx-border-color: -fx-ink;
+    -fx-background-radius: 10;
+    -fx-background-color: -fx-panel;
+    -fx-padding: 8px;
+    -fx-effect: dropshadow(gaussian, -fx-shadow, 0, 0, 4, 5);
+}
+
+/* -------------------------------------------------------------- buttons */
 .button {
-    -fx-background-color: #1A1A1A;
-    -fx-text-fill: #fff;
-    -fx-font-family: "Courier New", "monospace";
-    -fx-font-weight: 800;
-    -fx-padding: 60px 80px;
-    -fx-border-color: #1A1A1A;
-    -fx-border-width: 2px;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
+    -fx-background-color: -fx-panel;
+    -fx-text-fill: -fx-ink;
+    -fx-font-family: "Press Start 2P", "monospace";
+    -fx-font-size: 11px;
+    -fx-padding: 10px 16px;
+    -fx-border-color: -fx-ink;
+    -fx-border-width: 3;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, -fx-shadow, 0, 0, 3, 3);
 }
 
-.target-button {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 15px 20px;
-    }
-
-/* ==========================================================================
-   Menu
-   ========================================================================== */
-.title {
-    -fx-font-family: "Courier New", "monospace";
-    -fx-font-weight: 900;
-    -fx-font-size: 42px;
-    -fx-text-fill: #1A1A1A;
+.button:hover {
+    -fx-background-color: -fx-accent;
 }
 
-.menu-button {
-    -fx-padding: 30px 60px;
+.button:pressed {
+    -fx-background-color: -fx-accent-deep;
+    -fx-translate-y: 2;
 }
 
-.party-button {
-    -fx-padding: 20px 30px;
+.action-button {
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: -fx-fill-dark;
+    -fx-font-size: 14px;
+    -fx-padding: 14px 26px;
+}
+
+.action-button:hover { -fx-background-color: -fx-accent-deep; }
+
+.action-button-defeat {
+    -fx-background-color: #D9483B;
+    -fx-text-fill: -fx-panel;
+    -fx-font-size: 14px;
+    -fx-padding: 14px 26px;
+}
+
+.action-button-defeat:hover { -fx-background-color: #B53A30; }
+
+.overlay-menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-on-dark;
+    -fx-border-color: -fx-on-dark;
+    -fx-border-width: 2;
+    -fx-effect: none;
+}
+
+.overlay-menu-button:hover {
+    -fx-background-color: -fx-on-dark;
+    -fx-text-fill: -fx-fill-dark;
 }
 
 .back-button {
-    -fx-padding: 6px 12px;
-    -fx-font-size: 11px;
+    -fx-background-color: -fx-panel;
+    -fx-border-width: 2;
+    -fx-font-size: 9px;
+    -fx-padding: 6px 10px;
+    -fx-effect: dropshadow(gaussian, -fx-shadow, 0, 0, 2, 3);
 }
+
+/* ------------------------------------------------------------ target grid */
+.target-button {
+    -fx-padding: 10px 12px;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.target-card-name {
+    -fx-font-size: 10px;
+}
+
+.target-card .enemy-sprite {
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+}
+
+/* --------------------------------------------------------------- overlays */
+.overlay-root {
+    -fx-background-color: rgba(36, 27, 18, 0.55);
+}
+
+.battle-overlay {
+    -fx-background-color: -fx-panel;
+    -fx-background-radius: 12;
+    -fx-border-color: -fx-accent;
+    -fx-border-width: 4;
+    -fx-border-radius: 12;
+    -fx-padding: 16px 28px;
+    -fx-spacing: 10px;
+    -fx-max-width: 340px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 0, 0, 0, 6);
+}
+
+.battle-overlay-full {
+    -fx-max-width: none;
+    -fx-max-height: none;
+    -fx-min-width: 800px;
+    -fx-min-height: 600px;
+    -fx-padding: 40px;
+    -fx-spacing: 24px;
+    -fx-background-color: -fx-fill-dark;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-effect: none;
+}
+
+.overlay-title {
+    -fx-font-size: 20px;
+    -fx-text-fill: -fx-accent;
+}
+
+.battle-overlay-full .overlay-title {
+    -fx-font-size: 30px;
+}
+
+.overlay-subtitle {
+    -fx-font-family: "Press Start 2P", "monospace";
+    -fx-font-size: 10px;
+    -fx-text-fill: -fx-ink;
+}
+
+.battle-overlay-full .overlay-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-on-dark;
+}
+
+/* ------------------------------------------------------------------ menu */
+.menu-panel {
+    -fx-background-color: linear-gradient(to bottom, -fx-canvas-1, -fx-canvas-2);
+    -fx-padding: 40px;
+    -fx-spacing: 26px;
+}
+
+.title {
+    -fx-font-family: "Press Start 2P", "monospace";
+    -fx-font-size: 30px;
+    -fx-text-fill: -fx-accent;
+    -fx-effect: dropshadow(gaussian, -fx-shadow, 0, 0, 0, 5);
+}
+
+.menu-button {
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: -fx-fill-dark;
+    -fx-font-size: 14px;
+    -fx-padding: 20px 40px;
+}
+
+.menu-button:hover { -fx-background-color: -fx-accent-deep; }
+
+.party-button {
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-min-width: 64px;
+    -fx-min-height: 64px;
+    -fx-font-size: 14px;
+}
+
+/* ------------------------------------------------------- palette swatches */
+.theme-swatch {
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-background-radius: 50%;
+    -fx-border-width: 3;
+    -fx-border-radius: 50%;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, -fx-shadow, 0, 0, 3, 3);
+}
+
+.theme-swatch:hover {
+    -fx-scale-x: 1.15;
+    -fx-scale-y: 1.15;
+}
+
+.swatch-yellow { -fx-background-color: #F6B400; -fx-border-color: #241B12; }
+.swatch-gb     { -fx-background-color: #5CB85C; -fx-border-color: #0F380F; }
+.swatch-mono   { -fx-background-color: #333333; -fx-border-color: #111111; }

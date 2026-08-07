@@ -11,7 +11,7 @@ public class PlayerFactory {
     public Player[] generatePlayers(int count){
         Player[] players = new Player[count];
         for (int i = 0; i < count; i++) {
-            players[i] = new Player("Hero" + (i + 1), baseHealth, baseAttack);
+            players[i] = new Player("Hero-" + (i + 1), "Hero" + (i + 1), baseHealth, baseAttack, i + 1);
         }
         return players;
     }

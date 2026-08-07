@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CircularQueueTest {
 
     private Combatant combatant(String name) {
-        return new Enemy(name, 10, 2);
+        return new Enemy("Enemy-" + name, name, 10, 2, 1);
     }
 
     @Test
