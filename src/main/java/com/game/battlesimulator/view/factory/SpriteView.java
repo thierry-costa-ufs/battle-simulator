@@ -13,11 +13,10 @@ public class SpriteView extends StackPane {
     private final Region sprite;
     private final Label damageLabel;
 
-    public SpriteView(boolean isPlayer, int number) {
-        int n = Math.max(1, number);
+    public SpriteView(boolean isPlayer, int spriteIndex) {
         sprite = new Region();
         sprite.getStyleClass().add(isPlayer ? "player-sprite" : "enemy-sprite");
-        sprite.getStyleClass().add((isPlayer ? "player-sprite-" : "enemy-sprite-") + n);
+        sprite.getStyleClass().add((isPlayer ? "player-sprite-" : "enemy-sprite-") + spriteIndex);
         damageLabel = new Label();
         damageLabel.getStyleClass().add("damage-float");
         damageLabel.setVisible(false);

@@ -191,7 +191,8 @@ public class BattleEngine {
                 c.getName(),
                 c.getCurrentHealth(),
                 c.getMaxHealth(),
-                c instanceof Player
+                c instanceof Player,
+                c.getSpriteIndex()
         );
     }
 

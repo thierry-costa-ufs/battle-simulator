@@ -36,7 +36,7 @@ class FactoryTest {
 
     @Test
     void levelUpAddsDeltasAndFullyHeals() {
-        Player hero = new Player("Hero-1", "Hero1", 50, 10);
+        Player hero = new Player("Hero-1", "Hero1", 50, 10, 1);
         hero.takeDamage(30);
 
         hero.levelUp();

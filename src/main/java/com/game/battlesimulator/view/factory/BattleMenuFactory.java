@@ -11,8 +11,6 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class BattleMenuFactory {
     public static GridPane createTargetGrid(CombatantRecord[] enemies, Consumer<CombatantRecord> onTargetSelected) {
@@ -53,8 +51,7 @@ public class BattleMenuFactory {
             CombatantRecord enemy = enemies[i];
 
             if (!enemy.isDead()) {
-                int number = extractNumber(enemy.id());
-                SpriteView sprite = new SpriteView(false, number);
+                SpriteView sprite = new SpriteView(false, enemy.spriteIndex());
 
                 Label name = new Label(enemy.name());
                 name.getStyleClass().add("target-card-name");
@@ -82,11 +79,5 @@ public class BattleMenuFactory {
             }
         }
         return targetGrid;
-    }
-
-    private static int extractNumber(String id) {
-        if (id == null) return 1;
-        Matcher matcher = Pattern.compile("(\\d+)$").matcher(id);
-        return matcher.find() ? Integer.parseInt(matcher.group(1)) : 1;
     }
 }

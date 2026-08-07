@@ -5,7 +5,8 @@ public record CombatantRecord(
         String name,          // Nome do personagem ou monstro
         int currentHealth,    // Vida atual
         int maxHealth,        // Vida máxima
-        boolean isPlayer      // Flag para a interface saber de qual lado renderizar
+        boolean isPlayer,     // Flag para a interface saber de qual lado renderizar
+        int spriteIndex       // Índice do sprite (1-based, para o CSS buscar a imagem)
 ) {
 
     public double getHealthPercentage() {

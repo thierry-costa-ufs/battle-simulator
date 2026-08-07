@@ -19,8 +19,6 @@ import javafx.scene.layout.VBox;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class BattleController {
 
@@ -75,7 +73,7 @@ public class BattleController {
 
         CombatantRecord[] enemies = battleEngine.getEnemiesRecords();
         for (CombatantRecord enemy : enemies) {
-            SpriteView sprite = new SpriteView(false, extractSpriteNumber(enemy.id()));
+            SpriteView sprite = new SpriteView(false, enemy.spriteIndex());
             if (enemy.isDead()) {
                 sprite.markDead();
             }
@@ -94,7 +92,7 @@ public class BattleController {
 
         CombatantRecord[] players = battleEngine.getPlayersRecords();
         for (CombatantRecord player : players) {
-            SpriteView sprite = new SpriteView(true, extractSpriteNumber(player.id()));
+            SpriteView sprite = new SpriteView(true, player.spriteIndex());
             if (player.isDead()) {
                 sprite.markDead();
             }
@@ -105,12 +103,6 @@ public class BattleController {
             unit.setAlignment(Pos.BOTTOM_CENTER);
             playerSpriteContainer.getChildren().add(unit);
         }
-    }
-
-    private int extractSpriteNumber(String id) {
-        if (id == null) return 1;
-        Matcher matcher = Pattern.compile("(\\d+)$").matcher(id);
-        return matcher.find() ? Integer.parseInt(matcher.group(1)) : 1;
     }
 
     @FXML
@@ -174,7 +166,7 @@ public class BattleController {
 
         battleLogView.getItems().add(status.actionLog());
 
-        if (status.isGameOver() && status.killedTarget() != null) {
+        if (status.isGameOver() && !status.isVictory() && status.killedTarget() != null) {
             battleLogView.getItems().add("Derrota... " + status.killedTarget().name() + " tombou em combate");
             updateAllUI();
             showOverlay(false);
