@@ -28,8 +28,8 @@ public class BattleController {
     private final BattleEngine battleEngine = new BattleEngine();
 
     //COMBATANT ROWS
-    @FXML private VBox enemySpritesContainer;
-    @FXML private VBox playerSpriteContainer;
+    @FXML private HBox enemySpritesContainer;
+    @FXML private HBox playerSpriteContainer;
 
     //CONTROLS & LOG
     @FXML private ListView<String> battleLogView;
@@ -75,16 +75,16 @@ public class BattleController {
 
         CombatantRecord[] enemies = battleEngine.getEnemiesRecords();
         for (CombatantRecord enemy : enemies) {
-            SpriteView sprite = new SpriteView(false, SpriteView.safeIndex(extractSpriteNumber(enemy.id()), false));
+            SpriteView sprite = new SpriteView(false, extractSpriteNumber(enemy.id()));
             if (enemy.isDead()) {
                 sprite.markDead();
             }
             enemySprites.put(enemy.id(), sprite);
 
-            VBox status = CombatantStatusFactory.createStatusNode(enemy, Pos.TOP_LEFT, false);
-            HBox row = new HBox(10, sprite, status);
-            row.setAlignment(Pos.TOP_LEFT);
-            enemySpritesContainer.getChildren().add(row);
+            VBox status = CombatantStatusFactory.createStatusNode(enemy, Pos.TOP_CENTER, false);
+            VBox unit = new VBox(8, sprite, status);
+            unit.setAlignment(Pos.TOP_CENTER);
+            enemySpritesContainer.getChildren().add(unit);
         }
     }
 
@@ -94,16 +94,16 @@ public class BattleController {
 
         CombatantRecord[] players = battleEngine.getPlayersRecords();
         for (CombatantRecord player : players) {
-            SpriteView sprite = new SpriteView(true, SpriteView.safeIndex(extractSpriteNumber(player.id()), true));
+            SpriteView sprite = new SpriteView(true, extractSpriteNumber(player.id()));
             if (player.isDead()) {
                 sprite.markDead();
             }
             playerSprites.put(player.id(), sprite);
 
-            VBox status = CombatantStatusFactory.createStatusNode(player, Pos.BOTTOM_RIGHT, true);
-            HBox row = new HBox(10, status, sprite);
-            row.setAlignment(Pos.BOTTOM_RIGHT);
-            playerSpriteContainer.getChildren().add(row);
+            VBox status = CombatantStatusFactory.createStatusNode(player, Pos.BOTTOM_CENTER, true);
+            VBox unit = new VBox(8, sprite, status);
+            unit.setAlignment(Pos.BOTTOM_CENTER);
+            playerSpriteContainer.getChildren().add(unit);
         }
     }
 

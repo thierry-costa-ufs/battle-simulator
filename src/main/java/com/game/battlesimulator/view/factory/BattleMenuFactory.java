@@ -54,7 +54,7 @@ public class BattleMenuFactory {
 
             if (!enemy.isDead()) {
                 int number = extractNumber(enemy.id());
-                SpriteView sprite = new SpriteView(false, SpriteView.safeIndex(number, false));
+                SpriteView sprite = new SpriteView(false, number);
 
                 Label name = new Label(enemy.name());
                 name.getStyleClass().add("target-card-name");

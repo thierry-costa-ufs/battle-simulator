@@ -26,7 +26,6 @@ public class TurnOrderFactory {
 
             if (i == 0) {
                 carouselItem.getStyleClass().add("carousel-item-active");
-                carouselItem.setText("-> " + combatantName);
             } else {
                 carouselItem.getStyleClass().add("carousel-item-queue");
             }

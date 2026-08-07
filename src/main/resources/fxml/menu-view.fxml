@@ -11,7 +11,7 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.game.battlesimulator.controller.MenuController"
       stylesheets="@../css/battle.css"
-      styleClass="battle-container">
+      styleClass="battle-container menu-panel theme-yellow">
 
     <Label styleClass="title" text="BATTLE SIMULATOR"/>
 
@@ -27,6 +27,14 @@
     </HBox>
 
     <Label fx:id="partySizeLabel" styleClass="label" text="Heróis: 1"/>
+
+    <Label styleClass="label" text="Paleta"/>
+
+    <HBox alignment="CENTER" spacing="14">
+        <Button styleClass="theme-swatch swatch-yellow" onAction="#handleThemeYellow"/>
+        <Button styleClass="theme-swatch swatch-gb" onAction="#handleThemeGb"/>
+        <Button styleClass="theme-swatch swatch-mono" onAction="#handleThemeMono"/>
+    </HBox>
 
     <Button text="Iniciar Batalha" styleClass="menu-button" onAction="#handleStartBattle"/>
 </VBox>

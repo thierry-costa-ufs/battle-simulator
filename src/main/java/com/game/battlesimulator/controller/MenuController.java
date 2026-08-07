@@ -31,4 +31,11 @@ public class MenuController {
         SceneManager.setPartySize(selectedPartySize);
         SceneManager.switchScene("/fxml/battle-view.fxml");
     }
+
+    @FXML
+    private void handleThemeYellow() { SceneManager.setTheme("theme-yellow"); SceneManager.refreshTheme(); }
+    @FXML
+    private void handleThemeGb() { SceneManager.setTheme("theme-gb"); SceneManager.refreshTheme(); }
+    @FXML
+    private void handleThemeMono() { SceneManager.setTheme("theme-mono"); SceneManager.refreshTheme(); }
 }

@@ -14,20 +14,15 @@ public class SpriteView extends StackPane {
     private final Label damageLabel;
 
     public SpriteView(boolean isPlayer, int number) {
+        int n = Math.max(1, number);
         sprite = new Region();
         sprite.getStyleClass().add(isPlayer ? "player-sprite" : "enemy-sprite");
-        sprite.getStyleClass().add((isPlayer ? "player-sprite-" : "enemy-sprite-") + number);
+        sprite.getStyleClass().add((isPlayer ? "player-sprite-" : "enemy-sprite-") + n);
         damageLabel = new Label();
         damageLabel.getStyleClass().add("damage-float");
         damageLabel.setVisible(false);
         damageLabel.setManaged(false);
         getChildren().addAll(sprite, damageLabel);
-    }
-
-    public static int safeIndex(int number, boolean isPlayer) {
-        int max = isPlayer ? 4 : 5;
-        if (number < 1) return 1;
-        return ((number - 1) % max) + 1;
     }
 
     public void showHit(int damage) {
