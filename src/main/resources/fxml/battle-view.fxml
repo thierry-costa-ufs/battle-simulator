@@ -4,18 +4,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.StackPane?>
 
-<VBox alignment="CENTER"
-      spacing="15.0"
-      xmlns="http://javafx.com/javafx/8"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.game.battlesimulator.controller.BattleController"
-      stylesheets="@../css/battle.css"
-      styleClass="battle-container">
+<StackPane xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.game.battlesimulator.controller.BattleController"
+           stylesheets="@../css/battle.css"
+           styleClass="battle-container">
+
+    <VBox alignment="CENTER"
+          spacing="15.0">
 
     <HBox fx:id="turnOrderContainer" alignment="CENTER_LEFT" spacing="8" styleClass="turn-order-container">
     </HBox>
@@ -24,31 +22,26 @@
         <Button text="Voltar ao Menu" styleClass="back-button" onAction="#handleBackToMenu"/>
     </HBox>
 
-    <HBox VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
-        <VBox fx:id="enemyStatusContainer" alignment="TOP_LEFT" spacing="10">
-        </VBox>
-
-        <Region HBox.hgrow="ALWAYS"/>
-
-        <VBox fx:id="enemySpritesContainer" alignment="TOP_RIGHT">
+    <HBox VBox.vgrow="ALWAYS" alignment="TOP_LEFT">
+        <VBox fx:id="enemySpritesContainer" alignment="TOP_LEFT" spacing="10">
         </VBox>
     </HBox>
 
-    <HBox VBox.vgrow="ALWAYS" alignment="BOTTOM_CENTER">
-        <VBox fx:id="playerSpriteContainer" alignment="BOTTOM_LEFT">
-        </VBox>
-
-        <Region HBox.hgrow="ALWAYS"/>
-
-        <VBox fx:id="playerStatusContainer" alignment="BOTTOM_RIGHT" spacing="10">
+    <HBox VBox.vgrow="ALWAYS" alignment="BOTTOM_RIGHT">
+        <VBox fx:id="playerSpriteContainer" alignment="BOTTOM_RIGHT" spacing="10">
         </VBox>
     </HBox>
 
-    <HBox prefHeight="100" spacing="10" alignment="BOTTOM_CENTER">
-        <ListView fx:id="battleLogView" HBox.hgrow="ALWAYS"/>
+    <HBox prefHeight="110" spacing="10" alignment="BOTTOM_CENTER">
+        <ListView fx:id="battleLogView" HBox.hgrow="ALWAYS" styleClass="battle-log" prefHeight="110" minHeight="110"/>
 
-        <VBox fx:id="controlsContainer" alignment="BOTTOM_RIGHT">
-            <Button fx:id="attackButton" text="Atacar" onAction="#handleButtonClick"/>
+        <VBox fx:id="controlsContainer" styleClass="controls-container" alignment="CENTER" prefHeight="110" minHeight="110" prefWidth="240">
+            <Button fx:id="attackButton" text="Atacar" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS" onAction="#handleButtonClick"/>
         </VBox>
     </HBox>
-</VBox>
+
+    </VBox>
+
+    <StackPane fx:id="overlayRoot" styleClass="overlay-root" visible="false">
+    </StackPane>
+</StackPane>

@@ -20,6 +20,10 @@ public class TurnOrderFactory {
             Label carouselItem = new Label(combatantName);
             carouselItem.getStyleClass().add("carousel-item");
 
+            if (combatant.isDead()) {
+                carouselItem.getStyleClass().add("carousel-item-dead");
+            }
+
             if (i == 0) {
                 carouselItem.getStyleClass().add("carousel-item-active");
                 carouselItem.setText("-> " + combatantName);

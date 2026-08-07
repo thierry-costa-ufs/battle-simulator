@@ -119,7 +119,9 @@ public class BattleEngine {
                 actionLog,
                 isGameOver,
                 isVictory,
-                killedInThisTurn
+                killedInThisTurn,
+                target.getId(),
+                damage
         );
     }
 

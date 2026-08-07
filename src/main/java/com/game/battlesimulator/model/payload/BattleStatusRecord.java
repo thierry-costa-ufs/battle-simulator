@@ -6,6 +6,8 @@ public record BattleStatusRecord(
         String actionLog,
         boolean isGameOver,
         boolean isVictory,
-        CombatantRecord killedTarget
+        CombatantRecord killedTarget,
+        String hitTargetId,
+        int hitDamage
 ){
 }

@@ -2,7 +2,7 @@
    Configurações Globais e Tipografia Base
    ========================================================================== */
 .battle-container {
-    -fx-background-color: #F0F0F0;
+    -fx-background-color: #0E0E0E;
     -fx-padding: 15px;
     -fx-min-width: 800px;
     -fx-min-height: 600px;
@@ -12,34 +12,34 @@
     -fx-font-family: "Courier New", "monospace";
     -fx-font-weight: 800;
     -fx-font-size: 14px;
-    -fx-text-fill: #1A1A1A;
+    -fx-text-fill: #E8E8E8;
 }
 
 .hp-text {
     -fx-font-family: "Courier New", "monospace";
     -fx-font-size: 11px;
-    -fx-text-fill: #555555;
+    -fx-text-fill: #9A9A9A;
 }
 
 /* ==========================================================================
    Sistema de Turnos
    ========================================================================== */
 .turn-order-container {
-    -fx-background-color: #fff;
+    -fx-background-color: #1A1A1A;
     -fx-padding: 0px 20px;
     -fx-min-height: 50px;
     -fx-max-height: 50px;
     -fx-alignment: center;
     -fx-spacing: 15px;
-    -fx-border-color: #1A1A1A;
+    -fx-border-color: #2C2C2C;
     -fx-border-width: 2px;
 }
 
 .turn-title-label {
     -fx-font-size: 11px;
-    -fx-text-fill: #1A1A1A;
+    -fx-text-fill: #E8E8E8;
     -fx-font-weight: 900;
-    -fx-letter-spacing: 1px;
+    -fx-letter-spacing: 2px;
 }
 
 .carousel-item {
@@ -49,20 +49,23 @@
     -fx-font-weight: 900;
     -fx-padding: 4px 8px;
     -fx-alignment: center;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
-    -fx-border-color: #1A1A1A;
+    -fx-border-color: #2C2C2C;
     -fx-border-width: 2px;
 }
 
 .carousel-item-active {
-    -fx-background-color: #fff;
-    -fx-text-fill: #1A1A1A;
+    -fx-background-color: #E8E8E8;
+    -fx-text-fill: #0E0E0E;
+    -fx-border-color: #E8E8E8;
 }
 
 .carousel-item-queue {
-    -fx-background-color: #F0F0F0;
-    -fx-text-fill: #1A1A1A;
+    -fx-background-color: #1A1A1A;
+    -fx-text-fill: #9A9A9A;
+}
+
+.carousel-item-dead {
+    -fx-opacity: 0.35;
 }
 
 /* ==========================================================================
@@ -74,23 +77,19 @@
 }
 
 .progress-bar .track {
-    -fx-background-color: #fff;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
-    -fx-border-color: #1A1A1A;
+    -fx-background-color: #0E0E0E;
+    -fx-border-color: #2C2C2C;
     -fx-border-width: 1px;
 }
 
 .progress-bar .bar {
     -fx-background-color: #EF4444;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
 }
 
 /* ==========================================================================
    Sprites
    ========================================================================== */
-.enemy-sprite, .player-sprite {
+.player-sprite, .enemy-sprite {
     -fx-min-width: 64px;
     -fx-min-height: 64px;
     -fx-background-size: contain;
@@ -98,50 +97,129 @@
     -fx-background-position: center;
 }
 
-.enemy-sprite {
-    -fx-background-image: url('../images/enemy.png');
+.player-sprite-1 { -fx-background-image: url('../images/hero-1.png'); }
+.player-sprite-2 { -fx-background-image: url('../images/hero-2.png'); }
+.player-sprite-3 { -fx-background-image: url('../images/hero-3.png'); }
+.player-sprite-4 { -fx-background-image: url('../images/hero-4.png'); }
+
+.enemy-sprite-1 { -fx-background-image: url('../images/enemy-1.png'); }
+.enemy-sprite-2 { -fx-background-image: url('../images/enemy-2.png'); }
+.enemy-sprite-3 { -fx-background-image: url('../images/enemy-3.png'); }
+.enemy-sprite-4 { -fx-background-image: url('../images/enemy-4.png'); }
+.enemy-sprite-5 { -fx-background-image: url('../images/enemy-5.png'); }
+
+.sprite-dead {
+    -fx-opacity: 0.25;
 }
 
-.player-sprite {
-    -fx-background-image: url('../images/hero.png');
+.damage-float {
+    -fx-font-family: "Courier New", "monospace";
+    -fx-font-size: 18px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #E8E8E8;
+    -fx-translate-y: -10px;
 }
 
 /* ==========================================================================
    Controles e Log de Batalha
    ========================================================================== */
 .list-view {
-    -fx-background-color: #fff;
-    -fx-border-color: #1A1A1A;
+    -fx-background-color: #1A1A1A;
+    -fx-border-color: #2C2C2C;
     -fx-border-width: 2px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
 }
 
 .list-view .list-cell {
     -fx-background-color: transparent;
-    -fx-text-fill: #1A1A1A;
+    -fx-text-fill: #E8E8E8;
     -fx-font-family: "Courier New", "monospace";
     -fx-padding: 4px;
 }
 
-.button {
+.list-view .scroll-bar,
+.list-view .scroll-bar .track,
+.list-view .scroll-bar .track-background {
     -fx-background-color: #1A1A1A;
-    -fx-text-fill: #fff;
+}
+
+.list-view .scroll-bar .thumb {
+    -fx-background-color: #3A3A3A;
+}
+
+.list-view .scroll-bar .increment-button,
+.list-view .scroll-bar .decrement-button,
+.list-view .scroll-bar .corner {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.battle-log {
+    -fx-font-size: 12px;
+}
+
+.controls-container {
+    -fx-border-color: #2C2C2C;
+    -fx-border-width: 2px;
+    -fx-background-color: #1A1A1A;
+    -fx-padding: 6px;
+}
+
+.button {
+    -fx-background-color: #2C2C2C;
+    -fx-text-fill: #E8E8E8;
     -fx-font-family: "Courier New", "monospace";
     -fx-font-weight: 800;
-    -fx-padding: 60px 80px;
-    -fx-border-color: #1A1A1A;
+    -fx-padding: 10px 18px;
+    -fx-border-color: #3A3A3A;
     -fx-border-width: 2px;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
     -fx-cursor: hand;
 }
 
-.target-button {
+.button:hover {
+    -fx-background-color: #E8E8E8;
+    -fx-text-fill: #0E0E0E;
+    -fx-border-color: #E8E8E8;
+}
+
+.action-button {
+    -fx-background-color: #E8E8E8;
+    -fx-text-fill: #0E0E0E;
+    -fx-border-color: #E8E8E8;
     -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 15px 20px;
-    }
+    -fx-padding: 16px 28px;
+}
+
+.action-button-defeat {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: #0E0E0E;
+    -fx-border-color: #EF4444;
+    -fx-font-size: 16px;
+    -fx-padding: 16px 28px;
+}
+
+.overlay-menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #9A9A9A;
+    -fx-border-color: #3A3A3A;
+}
+
+.target-button {
+    -fx-padding: 12px 16px;
+}
+
+.target-card-name {
+    -fx-font-size: 13px;
+}
+
+.target-card .enemy-sprite {
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+}
+
+.back-button {
+    -fx-padding: 6px 12px;
+    -fx-font-size: 11px;
+}
 
 /* ==========================================================================
    Menu
@@ -150,7 +228,7 @@
     -fx-font-family: "Courier New", "monospace";
     -fx-font-weight: 900;
     -fx-font-size: 42px;
-    -fx-text-fill: #1A1A1A;
+    -fx-text-fill: #E8E8E8;
 }
 
 .menu-button {
@@ -161,7 +239,47 @@
     -fx-padding: 20px 30px;
 }
 
-.back-button {
-    -fx-padding: 6px 12px;
-    -fx-font-size: 11px;
+/* ==========================================================================
+   Overlays / Modais
+   ========================================================================== */
+.overlay-root {
+    -fx-background-color: rgba(14, 14, 14, 0.85);
+}
+
+.battle-overlay {
+    -fx-background-color: #1A1A1A;
+    -fx-border-color: #E8E8E8;
+    -fx-border-width: 2px;
+    -fx-padding: 18px 32px;
+    -fx-spacing: 10px;
+    -fx-max-width: 360px;
+}
+
+.battle-overlay-full {
+    -fx-max-width: none;
+    -fx-min-width: 420px;
+    -fx-padding: 40px 60px;
+    -fx-spacing: 20px;
+}
+
+.overlay-title {
+    -fx-font-family: "Courier New", "monospace";
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #E8E8E8;
+}
+
+.battle-overlay-full .overlay-title {
+    -fx-font-size: 40px;
+}
+
+.overlay-subtitle {
+    -fx-font-family: "Courier New", "monospace";
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #E8E8E8;
+}
+
+.battle-overlay-full .overlay-subtitle {
+    -fx-font-size: 16px;
 }
