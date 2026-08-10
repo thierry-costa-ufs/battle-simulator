@@ -1,5 +1,6 @@
 package com.game.battlesimulator.model.engine;
 
+import com.game.battlesimulator.model.domain.Player;
 import com.game.battlesimulator.model.payload.BattleStatusRecord;
 import com.game.battlesimulator.model.payload.CombatantRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,13 +66,17 @@ class BattleEngineTest {
     void killingLastPlayerIsDefeat() {
         BattleStatusRecord last = null;
         BattleStatusRecord r;
-        while ((r = engine.executeEnemyTurn()) != null) {
+        while (engine.getPlayersQuantity() > 0 && (r = engine.executeEnemyTurn()) != null) {
             last = r;
         }
         assertNotNull(last);
         assertTrue(last.isGameOver());
         assertFalse(last.isVictory());
-        assertNull(engine.executeEnemyTurn());
+
+        BattleStatusRecord afterDefeat = engine.executeEnemyTurn();
+        assertNotNull(afterDefeat);
+        assertTrue(afterDefeat.isGameOver());
+        assertFalse(afterDefeat.isVictory());
     }
 
     @Test
@@ -158,6 +163,9 @@ class BattleEngineTest {
 
         assertNotNull(next);
         assertNotEquals(firstAttackerId, next.id());
+    void exposesLevelUpGrowthFromPlayerConstants() {
+        assertEquals(Player.HEALTH_GROWTH, engine.getPlayerHealthGrowth());
+        assertEquals(Player.ATTACK_GROWTH, engine.getPlayerAttackGrowth());
     }
 
     private int healthOf(String id) {

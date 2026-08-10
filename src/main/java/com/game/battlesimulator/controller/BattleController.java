@@ -166,8 +166,11 @@ public class BattleController {
 
         battleLogView.getItems().add(status.actionLog());
 
-        if (status.isGameOver() && !status.isVictory() && status.killedTarget() != null) {
-            battleLogView.getItems().add("Derrota... " + status.killedTarget().name() + " tombou em combate");
+        if (status.isGameOver() && !status.isVictory()) {
+            String fallen = (status.killedTarget() != null)
+                    ? status.killedTarget().name() + " tombou em combate"
+                    : "a jornada termina aqui";
+            battleLogView.getItems().add("Derrota... " + fallen);
             updateAllUI();
             showOverlay(false);
         }
@@ -192,7 +195,13 @@ public class BattleController {
     }
 
     private void showOverlay(boolean victory) {
-        VBox overlay = OverlayViewFactory.createOverlay(victory, battleEngine.getCurrentRound(), this::handleOverlayAction);
+        VBox overlay = OverlayViewFactory.createOverlay(
+                victory,
+                battleEngine.getCurrentRound(),
+                battleEngine.getPlayerHealthGrowth(),
+                battleEngine.getPlayerAttackGrowth(),
+                this::handleOverlayAction
+        );
         overlayRoot.getChildren().clear();
         overlayRoot.getChildren().add(overlay);
         overlayRoot.setVisible(true);
