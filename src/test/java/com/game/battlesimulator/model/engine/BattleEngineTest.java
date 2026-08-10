@@ -66,13 +66,17 @@ class BattleEngineTest {
     void killingLastPlayerIsDefeat() {
         BattleStatusRecord last = null;
         BattleStatusRecord r;
-        while ((r = engine.executeEnemyTurn()) != null) {
+        while (engine.getPlayersQuantity() > 0 && (r = engine.executeEnemyTurn()) != null) {
             last = r;
         }
         assertNotNull(last);
         assertTrue(last.isGameOver());
         assertFalse(last.isVictory());
-        assertNull(engine.executeEnemyTurn());
+
+        BattleStatusRecord afterDefeat = engine.executeEnemyTurn();
+        assertNotNull(afterDefeat);
+        assertTrue(afterDefeat.isGameOver());
+        assertFalse(afterDefeat.isVictory());
     }
 
     @Test
