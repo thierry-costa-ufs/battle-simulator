@@ -4,28 +4,28 @@ import com.game.battlesimulator.model.domain.Combatant;
 
 class Node{
     private Combatant info;
-    private Node proximo;
+    private Node next;
 
     public Node(Combatant info) {
         this.info = info;
-        this.proximo = null;
+        this.next = null;
     }
 
     public Combatant getInfo() { return info; }
     public void setInfo(Combatant info) { this.info = info; }
-    public Node getProximo() { return proximo; }
-    public void setProximo(Node proximo) { this.proximo = proximo; }
+    public Node getNext() { return next; }
+    public void setNext(Node next) { this.next = next; }
 }
 
 public class CircularQueue {
-    private final Node cabeca; // Nó sentinela (Fila Encabeçada)
-    private Node fim;          // Ponteiro para o último elemento
+    private Node head;
+    private Node tail;
     private int size;
 
     public CircularQueue() {
-        this.cabeca = new Node(null); // Cabeça vazia
-        this.fim = cabeca;
-        this.fim.setProximo(cabeca); // Aponta para si mesma (circularidade)
+        this.head = new Node(null);
+        this.tail = head;
+        this.tail.setNext(head);
         this.size = 0;
     }
 
@@ -41,14 +41,14 @@ public class CircularQueue {
         Node novo = new Node(info);
 
         if (isEmpty()) {
-            cabeca.setProximo(novo);
-            fim=novo;
-            fim.setProximo(cabeca.getProximo());
+            head.setNext(novo);
+            tail =novo;
+            tail.setNext(head.getNext());
         }
         else {
-            novo.setProximo(cabeca.getProximo());
-            fim.setProximo(novo);
-            fim=novo;
+            novo.setNext(head.getNext());
+            tail.setNext(novo);
+            tail =novo;
         }
         size++;
     }
@@ -56,16 +56,16 @@ public class CircularQueue {
     public Combatant dequeue() {
         if (isEmpty()) return null;
 
-        Node primeiro = cabeca.getProximo();
+        Node primeiro = head.getNext();
         Combatant info = primeiro.getInfo();
 
         if (size == 1) {
-            cabeca.setProximo(cabeca);
-            fim = cabeca;
+            head.setNext(head);
+            tail = head;
         }
         else {
-            cabeca.setProximo(primeiro.getProximo());
-            fim.setProximo(cabeca.getProximo());
+            head.setNext(primeiro.getNext());
+            tail.setNext(head.getNext());
         }
         size--;
         return info;
@@ -74,29 +74,29 @@ public class CircularQueue {
     public boolean remove(Combatant info) {
         if (isEmpty()) return false;
 
-        Node anterior = cabeca;
-        Node atual = cabeca.getProximo();
+        Node anterior = head;
+        Node atual = head.getNext();
 
         for (int i = 0; i < size; i++) {
             if (atual.getInfo().equals(info)) {
-                anterior.setProximo(atual.getProximo());
+                anterior.setNext(atual.getNext());
 
-                if (atual == fim) {
-                    fim = (anterior == cabeca) ? cabeca : anterior;
+                if (atual == tail) {
+                    tail = (anterior == head) ? head : anterior;
                 }
 
                 size--;
 
                 if (size == 0) {
-                    cabeca.setProximo(cabeca);
-                    fim = cabeca;
+                    head.setNext(head);
+                    tail = head;
                 } else {
-                    fim.setProximo(cabeca.getProximo());
+                    tail.setNext(head.getNext());
                 }
                 return true;
             }
             anterior = atual;
-            atual = atual.getProximo();
+            atual = atual.getNext();
         }
         return false;
     }
@@ -111,17 +111,17 @@ public class CircularQueue {
     public Combatant getCombatantOnIndex(int index) {
         if (index < 0 || index >= size) return null;
 
-        Node atual = cabeca.getProximo();
+        Node atual = head.getNext();
         for (int i=0; i<index; i++) {
-            atual = atual.getProximo();
+            atual = atual.getNext();
         }
 
         return atual.getInfo();
     }
 
     public void clear(){
-        fim.setProximo(cabeca);
-        cabeca.setProximo(cabeca);
+        tail.setNext(head);
+        head.setNext(head);
         size = 0;
     }
 
