@@ -236,6 +236,14 @@ public class BattleEngine {
         return order;
     }
 
+    public int getPlayerHealthGrowth(){
+        return Player.HEALTH_GROWTH;
+    }
+
+    public int getPlayerAttackGrowth(){
+        return Player.ATTACK_GROWTH;
+    }
+
     public int getEnemiesQuantity(){
         return enemiesList.getSize();
     }

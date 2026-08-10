@@ -17,7 +17,7 @@ public class OverlayViewFactory {
 
     private OverlayViewFactory() {}
 
-    public static VBox createOverlay(boolean victory, int round, Consumer<OverlayAction> onAction) {
+    public static VBox createOverlay(boolean victory, int round, int healthGrowth, int attackGrowth, Consumer<OverlayAction> onAction) {
         Label title = new Label(victory ? VICTORY_TITLE : DEFEAT_TITLE);
         title.getStyleClass().add("overlay-title");
 
@@ -26,7 +26,7 @@ public class OverlayViewFactory {
 
         if (victory) {
             Label roundCleared = new Label("Round " + round + " vencido!");
-            Label levelUp = new Label("Heróis: +20 HP, +4 dano");
+            Label levelUp = new Label("Heróis: +" + healthGrowth + " HP, +" + attackGrowth + " dano");
             Label horde = new Label("Nova horda se aproxima...");
             for (Label l : new Label[]{roundCleared, levelUp, horde}) {
                 l.getStyleClass().add("overlay-subtitle");
