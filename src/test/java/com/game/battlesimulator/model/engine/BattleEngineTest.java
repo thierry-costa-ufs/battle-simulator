@@ -121,6 +121,48 @@ class BattleEngineTest {
     }
 
     @Test
+    void restartEngineResetsRoundAndKeepsPartySize() {
+        BattleEngine multiEngine = new BattleEngine();
+        multiEngine.startBattle(3);
+
+        multiEngine.prepareNextRound();
+        assertEquals(2, multiEngine.getCurrentRound());
+
+        multiEngine.restartEngine();
+
+        assertEquals(1, multiEngine.getCurrentRound());
+        assertEquals(3, multiEngine.getPlayersQuantity());
+    }
+
+    @Test
+    void executeAttackWithUnknownIdThrows() {
+        assertThrows(IllegalArgumentException.class,
+                () -> engine.executeAttack("id-inexistente"));
+    }
+
+    @Test
+    void getCurrentRoundStartsAtOne() {
+        assertEquals(1, engine.getCurrentRound());
+    }
+
+    @Test
+    void turnQueueContainsAllCombatantsAndStartsWithPlayer() {
+        BattleEngine multiEngine = new BattleEngine();
+        multiEngine.startBattle(3);
+
+        int total = multiEngine.getPlayersQuantity() + multiEngine.getEnemiesQuantity();
+        assertEquals(total, multiEngine.getTurnOrderRecords().length);
+        assertTrue(multiEngine.getCurrentAttackerRecord().isPlayer());
+    }
+
+    @Test
+    void attackRotatesTurnToNextCombatant() {
+        String firstAttackerId = engine.getCurrentAttackerRecord().id();
+        engine.executeAttack(firstEnemyId());
+        CombatantRecord next = engine.getCurrentAttackerRecord();
+
+        assertNotNull(next);
+        assertNotEquals(firstAttackerId, next.id());
     void exposesLevelUpGrowthFromPlayerConstants() {
         assertEquals(Player.HEALTH_GROWTH, engine.getPlayerHealthGrowth());
         assertEquals(Player.ATTACK_GROWTH, engine.getPlayerAttackGrowth());
