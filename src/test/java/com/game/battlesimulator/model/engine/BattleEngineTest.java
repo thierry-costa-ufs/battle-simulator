@@ -1,5 +1,6 @@
 package com.game.battlesimulator.model.engine;
 
+import com.game.battlesimulator.model.domain.Player;
 import com.game.battlesimulator.model.payload.BattleStatusRecord;
 import com.game.battlesimulator.model.payload.CombatantRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,6 +114,12 @@ class BattleEngineTest {
 
         assertEquals(3, multiEngine.getPlayersQuantity());
         assertEquals(3, multiEngine.getPlayersRecords().length);
+    }
+
+    @Test
+    void exposesLevelUpGrowthFromPlayerConstants() {
+        assertEquals(Player.HEALTH_GROWTH, engine.getPlayerHealthGrowth());
+        assertEquals(Player.ATTACK_GROWTH, engine.getPlayerAttackGrowth());
     }
 
     private int healthOf(String id) {

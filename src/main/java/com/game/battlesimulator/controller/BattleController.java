@@ -192,7 +192,13 @@ public class BattleController {
     }
 
     private void showOverlay(boolean victory) {
-        VBox overlay = OverlayViewFactory.createOverlay(victory, battleEngine.getCurrentRound(), this::handleOverlayAction);
+        VBox overlay = OverlayViewFactory.createOverlay(
+                victory,
+                battleEngine.getCurrentRound(),
+                battleEngine.getPlayerHealthGrowth(),
+                battleEngine.getPlayerAttackGrowth(),
+                this::handleOverlayAction
+        );
         overlayRoot.getChildren().clear();
         overlayRoot.getChildren().add(overlay);
         overlayRoot.setVisible(true);
