@@ -127,7 +127,16 @@ public class BattleEngine {
 
     public BattleStatusRecord executeEnemyTurn(){
         if (playersList.isEmpty()) {
-            return null;
+            return new BattleStatusRecord(
+                    getPlayersRecords(),
+                    getEnemiesRecords(),
+                    "Nenhum herói restante em campo...",
+                    true,
+                    false,
+                    null,
+                    null,
+                    0
+            );
         }
 
         int randomIndex = random.nextInt(playersList.getSize());
