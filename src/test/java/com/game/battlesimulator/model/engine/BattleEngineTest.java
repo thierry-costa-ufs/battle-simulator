@@ -163,6 +163,9 @@ class BattleEngineTest {
 
         assertNotNull(next);
         assertNotEquals(firstAttackerId, next.id());
+    }
+
+    @Test
     void exposesLevelUpGrowthFromPlayerConstants() {
         assertEquals(Player.HEALTH_GROWTH, engine.getPlayerHealthGrowth());
         assertEquals(Player.ATTACK_GROWTH, engine.getPlayerAttackGrowth());
